@@ -1,0 +1,354 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Document</title>
+    <style>
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+      
+      td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+      
+      tr:nth-child(even) {
+        background-color: #dddddd;
+      }
+      </style>
+</head>
+<body>
+    <!-- <H1> hello </H1>
+    <h3 class="text-bold" id="total-sales"></h3>
+    <canvas id="Chart1"></canvas> -->
+    <div id="filters">
+      <label for="districtFilter">District:</label>
+      <select id="districtFilter">
+        <option value="">All Districts</option>
+        <option value="Rwamagana">Rwamagana</option>
+        <option value="Kicukiro">Kicukiro</option>
+        <option value="Bugesera">Bugesera</option>
+        <option value="Gakenke">Gakenke</option>
+        <option value="Gasabo">Gasabo</option>
+        <option value="Huye">Huye</option>
+        <option value="Karongi">Karongi</option>
+        <option value="Kayonza">Kayonza</option>
+        <option value="Kirehe">Kirehe</option>
+        <option value="Muhanga">Muhanga</option>
+        <option value="Musanze">Musanze</option>
+        <option value="Rubavu">Rubavu</option>
+        <option value="Nyarugenge">Nyarugenge</option>
+        <option value="Rusizi">Rusizi</option>
+        <option value="Gatsibo">Gatsibo</option>
+        <option value="Ngoma">Ngoma</option>
+        <option value="Nyagatare">Nyagatare</option>
+        <option value="Burera">Burera</option>
+        <option value="Gicumbi">Gicumbi</option>
+        <option value="Rulindo">Rulindo</option>
+        <option value="Gisagara">Gisagara</option>
+        <option value="Ngororero">Ngororero</option>
+        <option value="Nyabihu">Nyabihu</option>
+        <option value="Nyamasheke">Nyamasheke</option>
+        <option value="Kamonyi">Kamonyi</option>
+        <option value="Nyamagabe">Nyamagabe</option>
+        <option value="Nyanza">Nyanza</option>
+        <option value="Nyaruguru">Nyaruguru</option>
+        <option value="Ruhango">Ruhango</option>
+        <option value="Rutsiro">Rutsiro</option>
+        
+      </select>
+      
+      <select id="profileFilter">
+        <option value="">All Profiles</option>
+        <option value="Government">Government</option>
+        <option value="Private">Private</option>
+        <!-- Add other profile options -->
+      </select>
+      <select id="sectorFilter">
+        <option value="">All Sector</option>
+        <option value="CENTRAL GOV">Central Government</option>
+        <option value="TECH">TECH</option>
+        <option value="EDUCATION">EDUCATION</option>
+        <option value="ENTERPRISE">ENTERPRISE</option>
+        
+        <!-- Add other profile options -->
+      </select>
+    </div>
+    
+    <!-- Add other filter options (sector, product, account_manager) similarly -->
+    
+    <!-- <div id="reportContainer">
+      <h1>table below</h1>
+    </div>       -->
+      
+      <!-- <div id="dataGraph"> -->
+        <!-- Data graph will be rendered here -->
+      <!-- </div> -->
+    
+      <div id="dataTable">
+        <table id="data-table">
+          <thead>
+            <tr>
+              <th>District</th>
+              <th>Product</th>
+              <th>Total Sales</th>
+              <th>Account Manager</th>
+            </tr>
+          </thead>
+          <tbody id="data-table-body">
+            <!-- Filtered data rows will be inserted here dynamically -->
+          </tbody>
+        </table>
+      </div>
+    
+      
+    <script>
+      var allData = JSON.parse('{{ data_json|escapejs }}');
+      // Calculate the sum of total_sales
+        var totalSalesSum = 0;
+        for (var i = 0; i < allData.length; i++) {
+          totalSalesSum += allData[i].total_sales;
+        }
+
+        // Display the sum in the <h3> HTML tag
+        var h3Element = document.getElementById('total-sales');
+        h3Element.textContent = 'Rwf ' + totalSalesSum;
+        h3Element.classList.add('text-bold');
+      // Calculate total sales for each month
+      const monthlySales = {};
+      allData.forEach(function(data) {
+        const month = data.sales_month;
+        const sales = data.total_sales;
+        if (!monthlySales.hasOwnProperty(month)) {
+          monthlySales[month] = sales;
+        } else {
+          monthlySales[month] += sales;
+        }
+      });
+    
+      // Extract the unique months and total sales values
+      const salesMonths = Object.keys(monthlySales);
+      const totalSales = Object.values(monthlySales);
+    
+      // Create the line chart using Chart.js
+      const ctx1 = document.getElementById("Chart1").getContext("2d");
+      const chart1 = new Chart(ctx1, {
+        // The type of chart we want to create
+        type: "line", // also try bar or other graph types
+    
+        // The data for our dataset
+        data: {
+          labels: salesMonths,
+          // Information about the dataset
+          datasets: [
+            {
+              label: "",
+              backgroundColor: "transparent",
+              borderColor: "#4A6CF7",
+              data: totalSales,
+              pointBackgroundColor: "transparent",
+              pointHoverBackgroundColor: "#4A6CF7",
+              pointBorderColor: "transparent",
+              pointHoverBorderColor: "#fff",
+              pointHoverBorderWidth: 5,
+              pointBorderWidth: 5,
+              pointRadius: 8,
+              pointHoverRadius: 8,
+            },
+          ],
+        },
+    
+        // Configuration options
+        defaultFontFamily: "Inter",
+        options: {
+          tooltips: {
+            callbacks: {
+              labelColor: function (tooltipItem, chart) {
+                return {
+                  backgroundColor: "#ffffff",
+                };
+              },
+            },
+            intersect: false,
+            backgroundColor: "#f9f9f9",
+            titleFontFamily: "Inter",
+            titleFontColor: "#8F92A1",
+            titleFontColor: "#8F92A1",
+            titleFontSize: 12,
+            bodyFontFamily: "Inter",
+            bodyFontColor: "#171717",
+            bodyFontStyle: "bold",
+            bodyFontSize: 16,
+            multiKeyBackground: "transparent",
+            displayColors: false,
+            xPadding: 30,
+            yPadding: 10,
+            bodyAlign: "center",
+            titleAlign: "center",
+          },
+    
+          title: {
+            display: false,
+          },
+          legend: {
+            display: false,
+          },
+    
+          scales: {
+            yAxes: [
+              {
+                gridLines: {
+                  display: false,
+                  drawTicks: false,
+                  drawBorder: false,
+                },
+                ticks: {
+                  padding: 35,
+                  max: Math.max(...totalSales) + 100,
+                  min: Math.min(...totalSales) - 100,
+                },
+              },
+            ],
+            xAxes: [
+              {
+                gridLines: {
+                  drawBorder: false,
+                  color: "rgba(143, 146, 161, .1)",
+                  zeroLineColor: "rgba(143, 146, 161, .1)",
+                },
+                ticks: {
+                  padding: 20,
+                },
+              },
+            ],
+          },
+        },
+      });
+    </script>
+    
+    <script>
+      var allData = JSON.parse('{{ data_json|escapejs }}');
+      // Create an object to store the total sales for each product
+      var productSales = {};
+
+      // Loop through each entry in the data and calculate the total sales for each product:
+      for (var i = 0; i < allData.length; i++) {
+        var entry = allData[i];
+        var product = entry.product;
+        var sales = parseFloat(entry.total_sales);
+      
+        if (!isNaN(sales)) {
+          if (productSales.hasOwnProperty(product)) {
+            productSales[product] += sales;
+          } else {
+            productSales[product] = sales;
+          }
+        }
+      }
+      // Convert the productSales object into an array of objects for easier sorting:
+      var productSalesArray = [];
+      for (var product in productSales) {
+        if (productSales.hasOwnProperty(product)) {
+          productSalesArray.push({ product: product, totalSales: productSales[product] });
+        }
+      }
+
+      // Sort the productSalesArray based on the total sales in descending order
+      productSalesArray.sort(function(a, b) {
+        return b.totalSales - a.totalSales;
+      });
+      // Create an HTML table to display the top 5 best selling products:
+      var table = document.createElement("table");
+
+      // Create table headers
+      var headerRow = table.insertRow();
+      var productHeader = headerRow.insertCell();
+      productHeader.textContent = "Product";
+      var salesHeader = headerRow.insertCell();
+      salesHeader.textContent = "Total Sales";
+
+      // Display top 5 best selling products
+      for (var i = 0; i < 5 && i < productSalesArray.length; i++) {
+        var row = table.insertRow();
+        var productCell = row.insertCell();
+        productCell.textContent = productSalesArray[i].product;
+        var salesCell = row.insertCell();
+        salesCell.textContent = productSalesArray[i].totalSales;
+      }
+
+      // Append the table to a container in your HTML, e.g., with an id of "reportContainer"
+      var reportContainer = document.getElementById("reportContainer");
+      reportContainer.appendChild(table);
+
+    </script>
+    <script>
+      var allData = JSON.parse('{{ data_json|escapejs }}');
+      var filteredData = allData; // Initialize filteredData with all the data initially
+
+      // Filter function based on selected options
+      function applyFilters() {
+        var district = document.getElementById("districtFilter").value;
+        var profile = document.getElementById("profileFilter").value;
+        var sector = document.getElementById("sectorFilter").value;
+        // Retrieve other filter values similarly
+
+        // Filter the data based on the selected values
+        filteredData = allData.filter(function(entry) {
+          return (
+            (district === "" || entry.district.trim() === district) &&
+            (profile === "" || entry.profile.trim() === profile) &&
+            (sector === "" || entry.sector.trim() === sector)
+            // Add other filter conditions similarly
+          );
+        });
+
+        // Call function to update the data table with the filtered data
+        updateDataTable();
+      }
+
+      // Update the data table with the filtered data
+      function updateDataTable() {
+        var tableBody = document.getElementById("data-table-body");
+        tableBody.innerHTML = ""; // Clear existing table body
+
+        // Populate the table with the filtered data
+        filteredData.forEach(function(entry) {
+          var row = document.createElement("tr");
+          var districtCell = document.createElement("td");
+          var productCell = document.createElement("td");
+          var salesCell = document.createElement("td");
+          var account_managerCell = document.createElement("td");
+
+          districtCell.textContent = entry.district;
+          productCell.textContent = entry.product;
+          salesCell.textContent = entry.total_sales;
+          account_managerCell.textContent = entry.account_manager || "-";
+
+          row.appendChild(districtCell);
+          row.appendChild(productCell);
+          row.appendChild(salesCell);
+          row.appendChild(account_managerCell);
+
+          tableBody.appendChild(row);
+        });
+      }
+
+      // Attach event listeners to filter options
+      document.getElementById("districtFilter").addEventListener("change", applyFilters);
+      document.getElementById("profileFilter").addEventListener("change", applyFilters);
+      document.getElementById("sectorFilter").addEventListener("change", applyFilters);
+
+      // Attach event listeners for other filter options similarly
+
+      // Initial population of the data table
+      updateDataTable();
+
+    </script>
+</body>
+</html>
