@@ -44,7 +44,7 @@ def graph_data_view(request):
     ]
 
     data_json = json.dumps(list(all_data))
-    return render(request, 'ui/test2.html', {'data_json': data_json})
+    return render(request, 'ui/index.html', {'data_json': data_json})
 
 def district_report_view(request):
     district_report = Report.objects.values('district').annotate(total_sales=Sum('total_sales'))
