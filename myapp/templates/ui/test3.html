@@ -234,7 +234,6 @@
     
     <script>
       var allData = JSON.parse('{{ data_json|escapejs }}');
-      console.log(allData);
       // Create an object to store the total sales for each product
       var productSales = {};
 
@@ -286,7 +285,7 @@
       // Append the table to a container in your HTML, e.g., with an id of "reportContainer"
       var reportContainer = document.getElementById("reportContainer");
       reportContainer.appendChild(table);
-      
+
     </script>
     <script>
       var allData = JSON.parse('{{ data_json|escapejs }}');
