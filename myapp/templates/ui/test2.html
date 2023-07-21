@@ -4,7 +4,15 @@
 {% load static %}
 {% block content %}
    <style>
-    
+    .pagination-buttons-container {
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  bottom: 20px; /* Adjust this value to set the desired distance from the bottom */
+  left: 0;
+  right: 0;
+  z-index: 999; /* Ensure the buttons appear above other elements */
+}
 .select-style-1 .select-position.select-sm::after {
     margin-top: 8px;
   }
@@ -571,7 +579,7 @@
                 <div class="title d-flex flex-wrap justify-content-between">
                   <div class="left">
                     <h6 class="text-medium mb-10">Yearly subscription</h6>
-                    <h3 class="text-bold" id="total-sales"></h3>
+                    <h3 class="text-bold" id="total-sales2"></h3>
                   </div>
                   <div class="right">
                     <div class="select-style-1">
@@ -965,6 +973,10 @@
   });
 
   // Update the total sales value in the HTML
-  const totalSalesElement = document.querySelector('.text-bold');
+  const totalSalesElement = document.getElementById('total-sales');
   totalSalesElement.textContent = `$${totalSales}`;
+  // Update the total sales value in the HTML
+  const totalSalesElement2 = document.getElementById('total-sales2');
+  totalSalesElement2.textContent = `$${totalSales}`;
+  
 </script>
