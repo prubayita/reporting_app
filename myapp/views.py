@@ -49,7 +49,7 @@ def graph_data_view(request):
         {key: value.strftime('%Y-%m-%d') if isinstance(value, date)
          else float(value) if isinstance(value, Decimal)
          else value for key, value in data.items()}
-        for data in report_data
+        for data in target_data
     ]
 
       # Convert QuerySet to list for JSON serialization
@@ -58,7 +58,7 @@ def graph_data_view(request):
     
     # data_json = json.dumps(list(report_data))
     # return render(request, 'ui/test5.html', {'data_json': data_json})
-    return render(request, 'ui/test5.html', {'report_data': report_data, 'target_data': target_data})
+    return render(request, 'ui/test2.html', {'report_data': report_data, 'target_data': target_data})
 
 
 

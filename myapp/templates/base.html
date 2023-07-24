@@ -102,7 +102,7 @@
         });
   
         // =========== chart one start
-        var allData = JSON.parse('{{ data_json|escapejs }}');
+        var allData = JSON.parse('{{ report_data|escapejs }}');
         // Calculate the sum of total_sales
         var totalSalesSum = 0;
         for (var i = 0; i < allData.length; i++) {
@@ -464,104 +464,73 @@
         // =========== chart three end
   
         // ================== chart four start
-        const ctx4 = document.getElementById("Chart4").getContext("2d");
-        const chart4 = new Chart(ctx4, {
-          // The type of chart we want to create
-          type: "bar", // also try bar or other graph types
-          // The data for our dataset
-          data: {
-            labels: ["Jan", "Fab", "Mar", "Apr", "May", "Jun"],
-            // Information about the dataset
-            datasets: [
-              {
-                label: "",
-                backgroundColor: "#4A6CF7",
-                barThickness: "flex",
-                maxBarThickness: 8,
-                data: [600, 700, 1000, 700, 650, 800],
-              },
-              {
-                label: "",
-                backgroundColor: "#d50100",
-                barThickness: "flex",
-                maxBarThickness: 8,
-                data: [690, 740, 720, 1120, 876, 900],
-              },
-            ],
-          },
-          // Configuration options
-          options: {
-            borderColor: "#F3F6F8",
-            borderWidth: 15,
-            backgroundColor: "#F3F6F8",
-            tooltips: {
-              callbacks: {
-                labelColor: function (tooltipItem, chart) {
-                  return {
-                    backgroundColor: "rgba(104, 110, 255, .0)",
-                  };
-                },
-              },
-              backgroundColor: "#F3F6F8",
-              titleFontColor: "#8F92A1",
-              titleFontSize: 12,
-              bodyFontColor: "#171717",
-              bodyFontStyle: "bold",
-              bodyFontSize: 16,
-              multiKeyBackground: "transparent",
-              displayColors: false,
-              xPadding: 30,
-              yPadding: 10,
-              bodyAlign: "center",
-              titleAlign: "center",
-            },
+         // Fetch the JSON data from Django template variables
+    var reportData = JSON.parse('{{ report_data|escapejs }}');
+    var targetData = JSON.parse('{{ target_data|escapejs }}');
+    console.log(targetData);
+    console.log(reportData);
   
-            title: {
-              display: false,
-            },
-            legend: {
-              display: false,
-            },
+    // Function to calculate the total sales and total targets for each month
+    function calculateTotalsByMonth(data) {
+      const totalsByMonth = {};
+      data.forEach((item) => {
+        const { total_sales, total_targets, sales_month } = item;
+        if (totalsByMonth[sales_month]) {
+          totalsByMonth[sales_month].total_sales += parseFloat(total_sales);
+          totalsByMonth[sales_month].total_targets += parseFloat(total_targets);
+        } else {
+          totalsByMonth[sales_month] = {
+            total_sales: parseFloat(total_sales),
+            total_targets: parseFloat(total_targets),
+          };
+        }
+      });
+      return totalsByMonth;
+    }
   
-            scales: {
-              yAxes: [
-                {
-                  gridLines: {
-                    display: false,
-                    drawTicks: false,
-                    drawBorder: false,
-                  },
-                  ticks: {
-                    padding: 35,
-                    max: 200000000,
-                    min: 0,
-                  },
-                },
-              ],
-              xAxes: [
-                {
-                  gridLines: {
-                    display: false,
-                    drawBorder: false,
-                    color: "rgba(143, 146, 161, .1)",
-                    zeroLineColor: "rgba(143, 146, 161, .1)",
-                  },
-                  ticks: {
-                    padding: 20,
-                  },
-                },
-              ],
-            },
+    // Process the JSON data to get total sales and total targets by month
+    const salesTotalsByMonth = calculateTotalsByMonth(reportData);
+    const targetsTotalsByMonth = calculateTotalsByMonth(targetData);
+  
+    // Prepare data for the chart
+    const months2 = Object.keys(salesTotalsByMonth);
+    const months = Object.keys(targetsTotalsByMonth);
+    const salesData = months2.map((month) => salesTotalsByMonth[month].total_sales);
+    const targetsData = months.map((month) => targetsTotalsByMonth[month].total_targets);
+  
+    // Create the chart
+    const ctx = document.getElementById("Chart4").getContext("2d");
+    const chart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: months,
+        datasets: [
+          {
+            label: "Total Sales",
+            backgroundColor: "#4A6CF7",
+            data: salesData,
           },
-        });
+          {
+            label: "Total Targets",
+            backgroundColor: "#d50100",
+            data: targetsData,
+          },
+        ],
+      },
+      options: {
+        // Add any additional options here if needed
+        // For example, you can customize tooltips, axis labels, etc.
+        
+      },
+    });
         // =========== chart four end
-        var allData = JSON.parse('{{ data_json|escapejs }}');
+        var allData = JSON.parse('{{ report_data|escapejs }}');
       </script>
       <script>
         //var allData = JSON.parse('{{ data_json|escapejs }}');
        //console.log(allData);
        $(document).ready(function () {
-       var jsonData = JSON.parse('{{ data_json|escapejs }}');
+       var jsonData = JSON.parse('{{ report_data|escapejs }}');
        console.log(jsonData);
        var accountManagerSales = {};
        var itemsPerPage = 10;
