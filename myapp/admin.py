@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Report
+from .models import *
 from import_export.admin import ImportExportModelAdmin
 
 # from myapp.resources import ReportResource
@@ -9,3 +9,8 @@ class ReportAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 admin.site.register(Report, ReportAdmin)
 
+
+class TargetAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('product', 'total_targets', 'account_manager', 'sales_month')
+
+admin.site.register(Target, TargetAdmin)

@@ -3,6 +3,12 @@ from datetime import date
 
 # Create your models here.
 
+class Target(models.Model):
+    product = models.CharField(max_length=100)
+    total_targets = models.DecimalField(max_digits=20, decimal_places=2, editable=False)
+    account_manager = models.CharField(max_length=100)
+    sales_month = models.CharField(max_length=20)
+
 class Report(models.Model):
     # DISTRICT_CHOICES = [
     #     ('Bugesera', 'Bugesera'),

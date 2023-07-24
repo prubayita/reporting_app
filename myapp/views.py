@@ -34,17 +34,33 @@ def table(request):
   return HttpResponse(template.render(context, request))
 
 def graph_data_view(request):
-    all_data = Report.objects.all().values()
+    report_data = Report.objects.all().values()
      # Convert date objects to strings and Decimal objects to floats
-    all_data = [
+    report_data = [
         {key: value.strftime('%Y-%m-%d') if isinstance(value, date)
          else float(value) if isinstance(value, Decimal)
          else value for key, value in data.items()}
-        for data in all_data
+        for data in report_data
     ]
 
-    data_json = json.dumps(list(all_data))
-    return render(request, 'ui/test2.html', {'data_json': data_json})
+    # Fetch data from the Target model
+    target_data = Target.objects.all().values()
+    target_data = [
+        {key: value.strftime('%Y-%m-%d') if isinstance(value, date)
+         else float(value) if isinstance(value, Decimal)
+         else value for key, value in data.items()}
+        for data in report_data
+    ]
+
+      # Convert QuerySet to list for JSON serialization
+    target_data = json.dumps(list(target_data))
+    report_data = json.dumps(list(report_data))
+    
+    # data_json = json.dumps(list(report_data))
+    # return render(request, 'ui/test5.html', {'data_json': data_json})
+    return render(request, 'ui/test5.html', {'report_data': report_data, 'target_data': target_data})
+
+
 
 def district_report_view(request):
     district_report = Report.objects.values('district').annotate(total_sales=Sum('total_sales'))
