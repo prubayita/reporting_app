@@ -102,7 +102,7 @@
         });
   
         // =========== chart one start
-        var allData = JSON.parse('{{ data_json|escapejs }}');
+        var allData = JSON.parse('{{ report_data|escapejs }}');
         // Calculate the sum of total_sales
         var totalSalesSum = 0;
         for (var i = 0; i < allData.length; i++) {
@@ -555,13 +555,13 @@
           },
         });
         // =========== chart four end
-        var allData = JSON.parse('{{ data_json|escapejs }}');
+        var allData = JSON.parse('{{ report_data|escapejs }}');
       </script>
       <script>
         //var allData = JSON.parse('{{ data_json|escapejs }}');
        //console.log(allData);
        $(document).ready(function () {
-       var jsonData = JSON.parse('{{ data_json|escapejs }}');
+       var jsonData = JSON.parse('{{ report_data|escapejs }}');
        console.log(jsonData);
        var accountManagerSales = {};
        var itemsPerPage = 10;
