@@ -26,7 +26,7 @@
 <body>
     <H1> hello </H1>
     <h3 class="text-bold" id="total-sales"></h3>
-    <canvas id="Chart3" style="width: 100%; height: 420px"></canvas>
+    <canvas id="Chart1" style="width: 100%; height: 420px"></canvas>
     <!-- <canvas id="Chart1"></canvas> -->
     <div id="filters">
       <label for="districtFilter">District:</label>
@@ -110,11 +110,11 @@
     
       
     <script>
-      var allData = JSON.parse('{{ data_json|escapejs }}');
-      // Calculate the sum of total_sales
+      var allData = JSON.parse('{{ target_data|escapejs }}');
+      // Calculate the sum of total_targets
         var totalSalesSum = 0;
         for (var i = 0; i < allData.length; i++) {
-          totalSalesSum += allData[i].total_sales;
+          totalSalesSum += allData[i].total_targets;
         }
 
         // Display the sum in the <h3> HTML tag
@@ -125,7 +125,7 @@
       const monthlySales = {};
       allData.forEach(function(data) {
         const month = data.sales_month;
-        const sales = data.total_sales;
+        const sales = data.total_targets;
         if (!monthlySales.hasOwnProperty(month)) {
           monthlySales[month] = sales;
         } else {
@@ -234,7 +234,7 @@
     </script>
     
     <script>
-      var allData = JSON.parse('{{ data_json|escapejs }}');
+      var allData = JSON.parse('{{ report_data|escapejs }}');
       console.log(allData);
       // Create an object to store the total sales for each product
       var productSales = {};
@@ -243,7 +243,7 @@
       for (var i = 0; i < allData.length; i++) {
         var entry = allData[i];
         var product = entry.product;
-        var sales = parseFloat(entry.total_sales);
+        var sales = parseFloat(entry.total_targets);
       
         if (!isNaN(sales)) {
           if (productSales.hasOwnProperty(product)) {
@@ -290,7 +290,7 @@
       
     </script>
     <script>
-      var allData = JSON.parse('{{ data_json|escapejs }}');
+      var allData = JSON.parse('{{ report_data|escapejs }}');
       var filteredData = allData; // Initialize filteredData with all the data initially
 
       // Filter function based on selected options
@@ -329,7 +329,7 @@
 
           districtCell.textContent = entry.district;
           productCell.textContent = entry.product;
-          salesCell.textContent = entry.total_sales;
+          salesCell.textContent = entry.total_targets;
           account_managerCell.textContent = entry.account_manager || "-";
 
           row.appendChild(districtCell);

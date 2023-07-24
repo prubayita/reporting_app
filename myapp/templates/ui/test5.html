@@ -40,7 +40,7 @@
     // Prepare data for the chart
     const months = Object.keys(salesTotalsByMonth);
     const salesData = months.map((month) => salesTotalsByMonth[month].total_sales);
-    const targetsData = months.map((month) => targetsTotalsByMonth[month].total_targets);
+    //const targetsData = months.map((month) => targetsTotalsByMonth[month].total_targets);
   
     // Create the chart
     const ctx = document.getElementById("salesTargetsChart").getContext("2d");
@@ -57,13 +57,14 @@
           {
             label: "Total Targets",
             backgroundColor: "#d50100",
-            data: targetsData,
+            data: salesData,
           },
         ],
       },
       options: {
         // Add any additional options here if needed
         // For example, you can customize tooltips, axis labels, etc.
+        
       },
     });
   </script>
