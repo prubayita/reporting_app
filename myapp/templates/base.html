@@ -636,6 +636,15 @@
        
          // Function to load JSON data using AJAX
          function loadJSONData() {
+          // Calculate the total number of unique BP_names (customers)
+          var uniqueCustomers = new Set(jsonData.map(item => item.bp_name));
+          var totalCustomers = uniqueCustomers.size;
+          console.log('Total number of customers: ', totalCustomers);
+          // Display the sum in the <h3> HTML tag
+            var h3Element = document.getElementById('total-customers');
+            h3Element.textContent = totalCustomers;
+            h3Element.classList.add('text-bold');
+
          jsonData = allData; // Assign the allData to the jsonData variable
          filteredData = jsonData; // Initialize filteredData with all data initially
          populateTable(jsonData, currentPage);
