@@ -3,7 +3,7 @@
     <!-- ======== sidebar-nav start =========== -->
 <aside class="sidebar-nav-wrapper">
     <div class="navbar-logo">
-      <a href="index.html">
+      <a href="{% url 'district_report_view' %}">
         <img src="https://bsc.rw/wp-content/uploads/2023/01/BSC-High-res.-vector-logo-01@2x-1-160x69.png" alt="logo" />
       </a>
     </div>
@@ -29,7 +29,7 @@
           </a>
           <ul id="ddmenu_1" class="collapse show dropdown-nav">
             <li>
-              <a href="index.html" class="active"> Overview </a>
+              <a href="{% url 'graph_data_view' %}" class="active"> Overview </a>
             </li>
             <li>
               <a href="#"> Settings </a>
