@@ -84,9 +84,9 @@
     
     <!-- Add other filter options (sector, product, account_manager) similarly -->
     
-    <!-- <div id="reportContainer">
+    <div id="reportContainer">
       <h1>table below</h1>
-    </div>       -->
+    </div>      
       
       <!-- <div id="dataGraph"> -->
         <!-- Data graph will be rendered here -->
@@ -243,7 +243,7 @@
       for (var i = 0; i < allData.length; i++) {
         var entry = allData[i];
         var product = entry.product;
-        var sales = parseFloat(entry.total_targets);
+        var sales = parseFloat(entry.total_sales);
       
         if (!isNaN(sales)) {
           if (productSales.hasOwnProperty(product)) {
