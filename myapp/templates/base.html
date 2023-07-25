@@ -486,7 +486,7 @@
               var h3Element = document.getElementById('total-targets');
               h3Element.textContent = 'Rwf ' + totalTargetsSum;
               h3Element.classList.add('text-bold');
-              // Calculate total sales for each month
+              // Calculate total targets for each month
             const monthlyTargets = {};
             targetData.forEach(function(data) {
               const month = data.sales_month;
@@ -497,6 +497,15 @@
                 monthlyTargets[month] += targets;
               }
             });
+           // Calculate the percentage of target achieved from total sales
+            const totalAchievedPercentage = (totalSalesSum / totalTargetsSum) * 100;
+            const percentageDifference = totalAchievedPercentage;
+
+            // Display the percentage in the <p> HTML tag
+            var percentageElement = document.getElementById('percentage-difference');
+            percentageElement.textContent = percentageDifference.toFixed(2) + '% achieved';
+            percentageElement.classList.add('text-gray');
+
       </script>
       
       <!--The script below handles all this related to the sales history table and it's filters-->
@@ -652,6 +661,24 @@
          updatePaginationButtons();
        }
        
+       // Function to calculate the total number of unique products
+        function calculateTotalProducts(data) {
+          const uniqueProducts = new Set();
+          data.forEach(function(item) {
+            uniqueProducts.add(item.product);
+          });
+          //print uniqueProducts in console
+          console.log(uniqueProducts);
+          return uniqueProducts.size;
+        }
+
+        // Call the function and get the total number of unique products
+        var totalProducts = calculateTotalProducts(jsonData);
+
+        // Display the total number of products in the <h3> HTML tag
+        var totalProductsElement = document.getElementById('total-products');
+        totalProductsElement.textContent = totalProducts;
+        totalProductsElement.classList.add('text-bold');
          // Function to calculate total sales for each account manager based on the filtered data
          function calculateAccountManagerSales() {
            accountManagerSales = {};
