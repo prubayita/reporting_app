@@ -86,7 +86,7 @@ def monthly(request):
     
     # data_json = json.dumps(list(report_data))
     # return render(request, 'ui/test5.html', {'data_json': data_json})
-    return render(request, 'ui/test2.html', {'report_data': report_data, 'target_data': target_data})
+    return render(request, 'ui/monthly.html', {'report_data': report_data, 'target_data': target_data})
 
 def district_report_view(request):
     district_report = Report.objects.values('district').annotate(total_sales=Sum('total_sales'))

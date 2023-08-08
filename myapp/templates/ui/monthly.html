@@ -1,0 +1,474 @@
+
+{% extends "base.html" %}
+
+{% load static %}
+{% block content %}
+   <style>
+    .main-btn2 {
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  padding: 15px 15px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 4px;
+  border-radius: 64px;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.4s ease-in-out;
+  border: 1px solid transparent;
+  overflow: hidden;
+  margin: 5px
+}
+    .pagination-buttons-container {
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  bottom: 20px; /* Adjust this value to set the desired distance from the bottom */
+  left: 0;
+  right: 0;
+  z-index: 999; /* Ensure the buttons appear above other elements */
+}
+#map {
+  height: 500px;
+ }
+.select-style-1 .select-position.select-sm::after {
+    margin-top: 8px;
+  }
+   </style>
+    <!-- ======== sidebar-nav end =========== -->
+
+    <!-- ======== main-wrapper start =========== -->
+    <main class="main-wrapper">
+      <!-- ========== header start ========== -->
+      <header class="header">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-5 col-md-5 col-6">
+              <div class="header-left d-flex align-items-center">
+                <div class="menu-toggle-btn mr-20">
+                  <button
+                    id="menu-toggle"
+                    class="main-btn primary-btn btn-hover"
+                  >
+                    <i class="lni lni-chevron-left me-2"></i> Menu
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-7 col-md-7 col-6">
+              <div class="header-right">
+                
+                <!-- filter icon start -->
+                <div class="filter-box ml-15 d-none d-md-flex">
+                  <button class="" type="button" id="toggleButton">
+                    <i class="lni lni-funnel"></i>
+                  </button>
+                </div>
+                <!-- filter end -->
+                <!-- profile start -->
+                <div class="profile-box ml-15">
+                  <button
+                    class="dropdown-toggle bg-transparent border-0"
+                    type="button"
+                    id="profile"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <div class="profile-info">
+                      <div class="info">
+                        <h6>John Doe</h6>
+                        <div class="image">
+                          <img
+                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/BMW_logo_%28gray%29.svg/270px-BMW_logo_%28gray%29.svg.png"
+                            alt=""
+                          />
+                          <span class="status"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <i class="lni lni-chevron-down"></i>
+                  </button>
+                  <ul
+                    class="dropdown-menu dropdown-menu-end"
+                    aria-labelledby="profile"
+                  >
+                    <li>
+                      <a href="#0">
+                        <i class="lni lni-user"></i> View Profile
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#0">
+                        <i class="lni lni-alarm"></i> Notifications
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#0"> <i class="lni lni-inbox"></i> Messages </a>
+                    </li>
+                    <li>
+                      <a href="#0"> <i class="lni lni-cog"></i> Settings </a>
+                    </li>
+                    <li>
+                      <a href="#0"> <i class="lni lni-exit"></i> Sign Out </a>
+                    </li>
+                  </ul>
+                </div>
+                <!-- profile end -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <!-- ========== header end ========== -->
+
+      <!-- ========== section start ========== -->
+      <section class="section">
+        <div class="container-fluid">
+          <!-- ========== title-wrapper start ========== -->
+          <div class="title-wrapper pt-30">
+            <div class="row align-items-center">
+              <div class="col-md-6">
+                <div class="title mb-30">
+                  <h2>Monthly Dashboard</h2>
+                </div>
+              </div>
+              <!-- end col -->
+              <div class="col-md-6">
+                <div class="breadcrumb-wrapper mb-30">
+                  <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                      <li class="breadcrumb-item">
+                        <a href="#0">Dashboard</a>
+                      </li>
+                      <li class="breadcrumb-item active" aria-current="page">
+                        Monthly
+                      </li>
+                    </ol>
+                  </nav>
+                </div>
+              </div>
+              <!-- end col -->
+            </div>
+            <!-- end row -->
+          </div>
+          <!-- ========== title-wrapper end ========== -->
+          <div class="row visually-hidden">
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+              <div class="icon-card mb-30">
+                <div class="icon success">
+                  <i class="lni lni-dollar"></i>
+                </div>
+                <div class="content">
+                  <h6 class="mb-10">Total Income</h6>
+                  <h3 class="text-bold mb-10" id="total-sales"></h3>
+                  <p class="text-sm text-success" id="percentage-difference">
+                   
+                  </p>
+                </div>
+              </div>
+              <!-- End Icon Cart -->
+            </div>
+            <!-- End Col -->
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+              <div class="icon-card mb-30">
+                <div class="icon primary">
+                  <i class="lni lni-credit-cards"></i>
+                </div>
+                <div class="content">
+                  <h6 class="mb-10">Total Target</h6>
+                  <h3 class="text-bold mb-10" id="total-targets"></h3>
+                </div>
+              </div>
+              <!-- End Icon Cart -->
+            </div>
+            <!-- End Col -->
+          </div>
+          <!-- End Row -->
+
+          <!-- FILTERS -->
+          <div class="row" id="targetDiv">
+            <div class="col-lg-12">
+              <div class="card-style mb-30">
+                <!-- Use "d-flex" to create a flex container and "flex-wrap" to wrap the items to the next line if necessary. -->
+                <div class="d-flex flex-wrap align-items-center justify-content-between">
+                  <!-- "mb-2" adds margin-bottom to create spacing between the filters. -->
+                  <div class="select-style-1 mb-2">
+                    <div class="select-position select-sm">
+                      <label for="sales-month-filter2">Sales Month:</label>
+                      <!-- The "light-bg" class is used for styling purposes. -->
+                      <select id="sales-month-filter2" class="light-bg">
+                        <!-- Options for Sales Month -->
+                        <option value="">All</option>
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October">October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                      </select>
+                    </div>
+                  </div>
+          
+                  <!-- Repeat the same structure for other filters. -->
+     
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--all sales-->
+          <div class="row">
+            <div class="col-lg-12">
+           <div class="card-style mb-30">
+             <div
+               class="
+                 title
+                 d-flex
+                 flex-wrap
+                 align-items-center
+                 justify-content-between
+               "
+             >
+               <div class="left">
+                 <h6 class="text-medium mb-30">Product performance</h6>
+               </div>
+               
+             </div>
+             <!-- End Title -->
+             <div class="table-responsive">
+               
+                <table id="product-account-manager-table" class="table top-selling-table">
+                    <thead>
+                      <tr>
+                        <th>
+                          <h6 class="text-sm text-medium">Products</h6>
+                        </th>
+                      
+                        <th>
+                          <h6 class="text-sm text-medium">MUKAMANA</h6>
+                        </th>
+                        <th>
+                            <h6 class="text-sm text-medium">KIZZA</h6>
+                          </th>
+                          <th>
+                            <h6 class="text-sm text-medium">MUSONI</h6>
+                          </th>
+                          <th>
+                            <h6 class="text-sm text-medium">MUKANOHERI</h6>
+                          </th>
+                          <th>
+                            <h6 class="text-sm text-medium">BANZA</h6>
+                          </th>
+                          <th>
+                            <h6 class="text-sm text-medium">MUGISHA</h6>
+                          </th>
+                          <th>
+                            <h6 class="text-sm text-medium">NIYITEGEKA</h6>
+                          </th>
+                          <th>
+                            <h6 class="text-sm text-medium">GAHIGI</h6>
+                          </th>
+                          
+                         
+                        <th>
+                          <h6 class="text-sm text-medium">Grand Total</h6>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- table rows will be dynamically added using JavaScript -->
+                    </tbody>
+                  </table>
+               <!-- End Table -->
+             </div>
+           </div>
+         </div>
+       </div>
+          
+        <!-- end container -->
+      </section>
+      <!-- ========== section end ========== -->
+
+      <!-- ========== footer start =========== -->
+      <footer class="footer">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-6 order-last order-md-first">
+              <div class="copyright text-center text-md-start">
+                <p class="text-sm">
+                  Designed and Developed by
+                  <a
+                    href="https://bsc.rw"
+                    rel="nofollow"
+                    target="_blank"
+                  >
+                    BSC Ltd.
+                  </a>
+                </p>
+              </div>
+            </div>
+            <!-- end col-->
+            <div class="col-md-6">
+              <div
+                class="
+                  terms
+                  d-flex
+                  justify-content-center justify-content-md-end
+                "
+              >
+                <a href="#0" class="text-sm">Term & Conditions</a>
+                <a href="#0" class="text-sm ml-15">Privacy & Policy</a>
+              </div>
+            </div>
+          </div>
+          <!-- end row -->
+        </div>
+        <!-- end container -->
+      </footer>
+      <!-- ========== footer end =========== -->
+    </main>
+    <!-- ======== main-wrapper end =========== -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+        // Hide the div initially (optional)
+        $('#targetDiv').hide();
+    
+        // Add click event listener to the button
+        $('#toggleButton').on('click', function() {
+        // Toggle the visibility of the div
+        $('#targetDiv').toggle();
+        });
+        });
+    </script>
+    
+  
+    <script>
+      var allData = JSON.parse('{{ report_data|escapejs }}');
+      var allTarget = JSON.parse('{{ target_data|escapejs }}');
+      console.log(allTarget);
+    
+      // Function to get unique account manager names from the data
+      function getUniqueAccountManagers(data) {
+        const uniqueAccountManagers = new Set();
+        data.forEach(function (item) {
+          uniqueAccountManagers.add(item.account_manager.trim());
+        });
+        return Array.from(uniqueAccountManagers);
+      }
+    
+      // Function to populate the "Sales by Product and Account Manager-Monthly Dashboard" table
+      function populateProductAccountManagerTable(data, accountManagers, selectedMonth) {
+        var tableBody = $('#product-account-manager-table tbody');
+        tableBody.empty();
+    
+        var products = new Set(data.map(item => item.product));
+    
+        var accountManagerTotals = {}; // Object to store the total sales for each account manager
+        var accountManagerTargets = {}; // Object to store the total targets for each account manager
+    
+        products.forEach(function (product) {
+          var row = $('<tr>');
+          row.append($('<td>').text(product));
+    
+          accountManagers.forEach(function (accountManagerName) {
+            var totalSales = 0;
+            var totalTargets = 0; // Variable to store the total targets for each account manager
+    
+            // Filter data by selected month (if applicable) and accountManager
+            data.forEach(function (item) {
+              if (item.product === product && item.account_manager.trim() === accountManagerName && (!selectedMonth || item.sales_month.trim() === selectedMonth)) {
+                totalSales += item.qty * item.price;
+              }
+            });
+    
+            row.append($('<td>').text(totalSales));
+    
+            // Update the total sales for the account manager
+            if (!accountManagerTotals[accountManagerName]) {
+              accountManagerTotals[accountManagerName] = totalSales;
+            } else {
+              accountManagerTotals[accountManagerName] += totalSales;
+            }
+    
+            // Calculate the total targets for the account manager (if applicable)
+            var target = allTarget.find(
+              targetItem =>
+                targetItem.account_manager.trim() === accountManagerName &&
+                targetItem.product === product &&
+                targetItem.sales_month.trim() === selectedMonth
+            );
+            if (target) {
+              totalTargets = target.total_targets;
+            }
+    
+            // Update the total targets for the account manager
+            if (!accountManagerTargets[accountManagerName]) {
+              accountManagerTargets[accountManagerName] = totalTargets;
+            } else {
+              accountManagerTargets[accountManagerName] += totalTargets;
+            }
+          });
+    
+          // Calculate the grand total for each product and account manager
+          var grandTotal = 0;
+          data.forEach(function (item) {
+            if (item.product === product && (!selectedMonth || item.sales_month.trim() === selectedMonth)) {
+              grandTotal += item.qty * item.price;
+            }
+          });
+          row.append($('<td>').text(grandTotal));
+    
+          tableBody.append(row);
+        });
+    
+        // Add a row to show the total sales for each account manager
+        var totalRow = $('<tr>');
+        totalRow.append($('<td>').html('<strong>Total Sales</strong>'));
+        accountManagers.forEach(function (accountManagerName) {
+          var totalSales = accountManagerTotals[accountManagerName] || 0;
+          totalRow.append($('<td>').html('<strong>' + totalSales + '</strong>'));
+        });
+        totalRow.append('<td></td>'); // Empty cell for the grand total column
+        tableBody.append(totalRow);
+    
+        // Add a row to show the total targets for each account manager
+        var targetRow = $('<tr>');
+        targetRow.append($('<td>').html('<strong>Total Targets</strong>'));
+        accountManagers.forEach(function (accountManagerName) {
+          var totalTargets = accountManagerTargets[accountManagerName] || 0;
+          targetRow.append($('<td>').html('<strong>' + totalTargets + '</strong>'));
+        });
+        targetRow.append('<td></td>'); // Empty cell for the grand total column
+        tableBody.append(targetRow);
+      }
+    
+      // Call the function to get unique account managers
+      var accountManagers = getUniqueAccountManagers(allData);
+      console.log(accountManagers);
+    
+      // Populate the "Sales by Product and Account Manager" table with the dynamic account managers
+      populateProductAccountManagerTable(allData, accountManagers, '');
+    
+      // Add event listener to the "Sales Month" filter dropdown
+      $('#sales-month-filter2').on('change', function () {
+        var selectedMonth = this.value.trim(); // Update the selected month value when the user selects a new option
+        populateProductAccountManagerTable(allData, accountManagers, selectedMonth); // Repopulate the table with the filtered data
+      });
+    </script>
+    
+    
+{% endblock content %}
