@@ -525,6 +525,8 @@
          function populateTable(data, page) {
            var tableBody = $('#data-table tbody');
            tableBody.empty();
+           var tableBody2 = $('#data-table2 tbody');
+           tableBody2.empty();
        
            // Calculate the start and end indices for the current page
            var startIndex = (page - 1) * itemsPerPage;
@@ -595,6 +597,7 @@
              row.append($('<td class="text-sm">').text(item.account_manager));
        
              tableBody.append(row);
+             tableBody2.append(row);
            }
            updatePaginationButtons();
          }
@@ -823,6 +826,7 @@
          calculateAccountManagerSales();
          updateChart(filteredData); // Pass the filtered data to the updateChart function
        }
+      
      
        // Example usage of an input event listener for the search input field
        $('#search-input').on('input', function () {
@@ -994,6 +998,10 @@
       var reportContainer = document.getElementById("reportContainer");
       reportContainer.appendChild(table);
 
+    </script>
+    <!--This handles the monthly table-->
+    <script>
+      
     </script>
     </body>
 </html>
