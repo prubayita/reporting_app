@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import *
 from django.db.models import Count, Sum
 from datetime import date
@@ -7,7 +7,8 @@ from django.http import HttpResponse
 from django.template import loader
 import json
 from decimal import Decimal
-
+from django.contrib import messages
+from django.contrib.auth import authenticate, login as auth_login, logout
 
 # Create your views here.
 # def reports(request):
@@ -19,10 +20,21 @@ from decimal import Decimal
 #   return HttpResponse(template.render(context, request))
 
 def login(request):
-  template = loader.get_template('cred/login.html')
-  return HttpResponse(template.render())
+  if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect('graph_data_view')  # Redirect to the desired page after successful login
+        else:
+            messages.error(request, 'Invalid username or password.')
+            return redirect('login')
+  return render(request, 'cred/login.html')
 
-
+def logout_view(request):
+    logout(request)
+    return redirect('login') 
 
 
 def table(request):
