@@ -1,179 +1,186 @@
-
-
-{% load static %}
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <title>Document</title>
-    
+  <title>Graph</title>
+  <!-- Include the Chart.js library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- <H1> hello </H1>
-    <h3 class="text-bold" id="total-sales"></h3> -->
-    <!-- <canvas id="Chart1"></canvas> -->
-    <div class="chart">
-        <canvas id="Chart4" style="width: 100%; height: 420px"></canvas>
-    </div>
-    <canvas id="Chart4" style="width: 100%; height: 420px"></canvas>
-    <!-- <div id="filters">
-    <label for="districtFilter">District:</label>
+  <div id="filters">
+    <!-- <label for="districtFilter">District:</label>
     <select id="districtFilter">
-        <option value="">All Districts</option>
-        <option value="Rwamagana">Rwamagana</option>
-        <option value="Kicukiro">Kicukiro</option>
-        <option value="Bugesera">Bugesera</option>
-        <option value="Gakenke">Gakenke</option>
-        <option value="Gasabo">Gasabo</option>
-        <option value="Huye">Huye</option>
-        <option value="Karongi">Karongi</option>
-        <option value="Kayonza">Kayonza</option>
-        <option value="Kirehe">Kirehe</option>
-        <option value="Muhanga">Muhanga</option>
-        <option value="Musanze">Musanze</option>
-        <option value="Rubavu">Rubavu</option>
-        <option value="Nyarugenge">Nyarugenge</option>
-        <option value="Rusizi">Rusizi</option>
-        <option value="Gatsibo">Gatsibo</option>
-        <option value="Ngoma">Ngoma</option>
-        <option value="Nyagatare">Nyagatare</option>
-        <option value="Burera">Burera</option>
-        <option value="Gicumbi">Gicumbi</option>
-        <option value="Rulindo">Rulindo</option>
-        <option value="Gisagara">Gisagara</option>
-        <option value="Ngororero">Ngororero</option>
-        <option value="Nyabihu">Nyabihu</option>
-        <option value="Nyamasheke">Nyamasheke</option>
-        <option value="Kamonyi">Kamonyi</option>
-        <option value="Nyamagabe">Nyamagabe</option>
-        <option value="Nyanza">Nyanza</option>
-        <option value="Nyaruguru">Nyaruguru</option>
-        <option value="Ruhango">Ruhango</option>
-        <option value="Rutsiro">Rutsiro</option>
-        
-    </select>
-    
-    <select id="profileFilter">
-        <option value="">All Profiles</option>
-        <option value="Government">Government</option>
-        <option value="Private">Private</option> -->
-        <!-- Add other profile options -->
-    <!-- </select>
-    <select id="sectorFilter">
-        <option value="">All Sector</option>
-        <option value="CENTRAL GOV">Central Government</option>
-        <option value="TECH">TECH</option>
-        <option value="EDUCATION">EDUCATION</option>
-        <option value="ENTERPRISE">ENTERPRISE</option> -->
-        
-        <!-- Add other profile options -->
-    <!-- </select>
-    </div> -->
-    
-    <!-- Add other filter options (sector, product, account_manager) similarly -->
-    
-    <!-- <div id="reportContainer">
-    <h1>table below</h1>
-    </div>       -->
-    
-    <!-- <div id="dataGraph"> -->
-        <!-- Data graph will be rendered here -->
-    <!-- </div> -->
+      <option value="">All Districts</option>
+      <option value="Rwamagana">Rwamagana</option>
+      <option value="Kicukiro">Kicukiro</option>
+      <option value="Bugesera">Bugesera</option>
+      <option value="Gakenke">Gakenke</option>
+      <option value="Gasabo">Gasabo</option>
+      <option value="Huye">Huye</option>
+      <option value="Karongi">Karongi</option>
+      <option value="Kayonza">Kayonza</option>
+      <option value="Kirehe">Kirehe</option>
+      <option value="Muhanga">Muhanga</option>
+      <option value="Musanze">Musanze</option>
+      <option value="Rubavu">Rubavu</option>
+      <option value="Nyarugenge">Nyarugenge</option>
+      <option value="Rusizi">Rusizi</option>
+      <option value="Gatsibo">Gatsibo</option>
+      <option value="Ngoma">Ngoma</option>
+      <option value="Nyagatare">Nyagatare</option>
+      <option value="Burera">Burera</option>
+      <option value="Gicumbi">Gicumbi</option>
+      <option value="Rulindo">Rulindo</option>
+      <option value="Gisagara">Gisagara</option>
+      <option value="Ngororero">Ngororero</option>
+      <option value="Nyabihu">Nyabihu</option>
+      <option value="Nyamasheke">Nyamasheke</option>
+      <option value="Kamonyi">Kamonyi</option>
+      <option value="Nyamagabe">Nyamagabe</option>
+      <option value="Nyanza">Nyanza</option>
+      <option value="Nyaruguru">Nyaruguru</option>
+      <option value="Ruhango">Ruhango</option>
+      <option value="Rutsiro">Rutsiro</option>
+      
+    </select> -->
+    <label for="accountManagerFilter">Account Manager:</label>
+      <select id="accountManagerFilter" class="light-bg">
+        <!-- Options for Account Manager -->
+        <option value="">All</option>
+        <option value="MUKAMANA">MUKAMANA</option>
+        <option value="KIZZA">KIZZA</option>
+        <option value="MUSONI">MUSONI</option>
+        <option value="BANZA">BANZA</option>
+        <option value="GAHIGI">GAHIGI</option>
+        <option value="MUKANOHERI">MUKANOHERI</option>
+        <option value="NIYITEGEKA">NIYITEGEKA</option>
+        <option value="MUGISHA">MUGISHA</option>
+      </select>
 
-    <script>
-        const ctx4 = document.getElementById("Chart4").getContext("2d");
-        const chart4 = new Chart(ctx4, {
-          // The type of chart we want to create
-          type: "bar", // also try bar or other graph types
-          // The data for our dataset
-          data: {
-            labels: ["Jan", "Fab", "Mar", "Apr", "May", "Jun"],
-            // Information about the dataset
-            datasets: [
-              {
-                label: "",
-                backgroundColor: "#4A6CF7",
-                barThickness: "flex",
-                maxBarThickness: 8,
-                data: [600, 700, 1000, 700, 650, 800],
-              },
-              {
-                label: "",
-                backgroundColor: "#d50100",
-                barThickness: "flex",
-                maxBarThickness: 8,
-                data: [690, 740, 720, 1120, 876, 900],
-              },
-            ],
-          },
-          // Configuration options
-          options: {
-            borderColor: "#F3F6F8",
-            borderWidth: 15,
-            backgroundColor: "#F3F6F8",
-            tooltips: {
-              callbacks: {
-                labelColor: function (tooltipItem, chart) {
-                  return {
-                    backgroundColor: "rgba(104, 110, 255, .0)",
-                  };
-                },
-              },
-              backgroundColor: "#F3F6F8",
-              titleFontColor: "#8F92A1",
-              titleFontSize: 12,
-              bodyFontColor: "#171717",
-              bodyFontStyle: "bold",
-              bodyFontSize: 16,
-              multiKeyBackground: "transparent",
-              displayColors: false,
-              xPadding: 30,
-              yPadding: 10,
-              bodyAlign: "center",
-              titleAlign: "center",
-            },
+
+    <label for="productFilter">Product:</label>
+      <select id="productFilter" class="light-bg">
+        <!-- Options for Product -->
+        <option value="">All</option>
+        <option value="4G LTE connectivity">4G LTE connectivity</option>
+        <option value="Fiber Broadband Internet - Private">Fiber Broadband Internet - Private</option>
+        <option value="Fiber Broadband Internet - GoR">Fiber Broadband Internet - GoR</option>
+        <option value="Cloud Computing">Cloud Computing</option>
+        <option value="Projects">Projects</option>
+        <option value="Dark Fiber Lease">Dark Fiber Lease</option>
+        <option value="VOIP">VOIP</option>
+        <option value="Managed Security Services">Managed Security Services</option>
+        <option value="Video Conferencing Services">Video Conferencing Services</option>
+        <option value="Local Content">Local Content</option>
+      </select>
+  </div>
+  <!-- <canvas id="Chart4" style="width: 100%; height: 420px"></canvas> -->
+  <canvas id="salesTargetsChart" width="400" height="100"></canvas>
+  <script>
+    // Fetch the JSON data from Django template variables
+    var reportData = JSON.parse('{{ report_data|escapejs }}');
+    var targetData = JSON.parse('{{ target_data|escapejs }}');
+    console.log(targetData);
+    console.log(reportData);
   
-            title: {
-              display: false,
-            },
-            legend: {
-              display: false,
-            },
+    // Function to calculate the total sales and total targets for each month
+    function calculateTotalsByMonth(data) {
+      const totalsByMonth = {};
+      data.forEach((item) => {
+        const { total_sales, total_targets, sales_month } = item;
+        if (totalsByMonth[sales_month]) {
+          totalsByMonth[sales_month].total_sales += parseFloat(total_sales);
+          totalsByMonth[sales_month].total_targets += parseFloat(total_targets);
+        } else {
+          totalsByMonth[sales_month] = {
+            total_sales: parseFloat(total_sales),
+            total_targets: parseFloat(total_targets),
+          };
+        }
+      });
+      return totalsByMonth;      
+    }
+
+    // Process the JSON data to get total sales and total targets by month
+    const salesTotalsByMonth = calculateTotalsByMonth(reportData);
+    const targetsTotalsByMonth = calculateTotalsByMonth(targetData);
   
-            scales: {
-              yAxes: [
-                {
-                  gridLines: {
-                    display: false,
-                    drawTicks: false,
-                    drawBorder: false,
-                  },
-                  ticks: {
-                    padding: 35,
-                    max: 1200,
-                    min: 0,
-                  },
-                },
-              ],
-              xAxes: [
-                {
-                  gridLines: {
-                    display: false,
-                    drawBorder: false,
-                    color: "rgba(143, 146, 161, .1)",
-                    zeroLineColor: "rgba(143, 146, 161, .1)",
-                  },
-                  ticks: {
-                    padding: 20,
-                  },
-                },
-              ],
-            },
+    // Prepare data for the chart
+    const months2 = Object.keys(salesTotalsByMonth);
+    const months = Object.keys(targetsTotalsByMonth);
+    const salesData = months2.map((month) => salesTotalsByMonth[month].total_sales);
+    const targetsData = months.map((month) => targetsTotalsByMonth[month].total_targets);
+  
+  
+    // Create the initial chart
+    const ctx = document.getElementById("salesTargetsChart").getContext("2d");
+    const chart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: months,
+        datasets: [
+          {
+            label: "Total Sales",
+            backgroundColor: "#4A6CF7",
+            data: salesData,
           },
-        });
-    </script>
-    
- 
+          {
+            label: "Total Targets",
+            backgroundColor: "#d50100",
+            data: targetsData,
+          },
+        ],
+      },
+      options: {
+        // Add any additional options here if needed
+        // For example, you can customize tooltips, axis labels, etc.
+      },
+    });
+  
+    // Event listeners for filter dropdowns
+    //document.getElementById("districtFilter").addEventListener("change", updateChart);
+    document.getElementById("accountManagerFilter").addEventListener("change", updateChart);
+    document.getElementById("productFilter").addEventListener("change", updateChart);
+  
+    // Function to update the chart based on filters
+    function updateChart() {
+      // Get selected filter values profile Filter
+      //const selectedDistrict = document.getElementById("districtFilter").value;
+      const selectedAccount_manager = document.getElementById("accountManagerFilter").value;
+      const selectedProduct = document.getElementById("productFilter").value;
+  
+      // Filter data based on selected filters
+      const filteredReportData = reportData.filter(item =>
+        //(!selectedDistrict || item.district === selectedDistrict) &&
+        (!selectedAccount_manager|| item.account_manager === selectedAccount_manager) &&
+        (!selectedProduct || item.product === selectedProduct)
+      );
+
+      // Filter data based on selected filters
+      const filteredtargetData = targetData.filter(item =>
+        //(!selectedDistrict || item.district === selectedDistrict) &&
+        (!selectedAccount_manager|| item.account_manager === selectedAccount_manager) &&
+        (!selectedProduct || item.product === selectedProduct)
+      );
+  
+      // Recalculate totals and prepare data for the chart 
+      const filteredSalesTotalsByMonth = calculateTotalsByMonth(filteredReportData);
+      const filteredTargetsData = calculateTotalsByMonth(filteredtargetData);
+      console.log(filteredSalesTotalsByMonth);
+      console.log(filteredTargetsData);
+      // Get filtered months from the sales data
+      const filteredMonths = Object.keys(filteredSalesTotalsByMonth);
+      const filteredMonths2 = Object.keys(filteredTargetsData);
+  
+      // Update the chart data and labels
+      chart.data.labels = filteredMonths;
+      chart.data.labels = filteredMonths2;
+      chart.data.datasets[0].data = filteredMonths.map(month => filteredSalesTotalsByMonth[month].total_sales);
+      chart.data.datasets[1].data = filteredMonths2.map(month => filteredTargetsData[month].total_targets);
+  
+      // Redraw the chart
+      chart.update();
+    }
+  </script>
+  
 </body>
 </html>
