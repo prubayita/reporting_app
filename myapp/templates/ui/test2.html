@@ -178,14 +178,9 @@
                       <select id="account-manager-filter" class="light-bg">
                         <!-- Options for Account Manager -->
                         <option value="">All</option>
-                        <option value="MUKAMANA">MUKAMANA</option>
-                        <option value="KIZZA">KIZZA</option>
-                        <option value="MUSONI">MUSONI</option>
-                        <option value="BANZA">BANZA</option>
-                        <option value="GAHIGI">GAHIGI</option>
-                        <option value="MUKANOHERI">MUKANOHERI</option>
-                        <option value="NIYITEGEKA">NIYITEGEKA</option>
-                        <option value="MUGISHA">MUGISHA</option>
+                        {% for account_manager in account_managers %}
+                          <option value="{{ account_manager }}">{{ account_manager }}</option>
+                        {% endfor %}
                       </select>
                     </div>
                   </div>
@@ -209,16 +204,9 @@
                       <select id="product-filter" class="light-bg">
                         <!-- Options for Product -->
                         <option value="">All</option>
-                        <option value="4G LTE connectivity">4G LTE connectivity</option>
-                        <option value="Fiber Broadband Internet - Private">Fiber Broadband Internet - Private</option>
-                        <option value="Fiber Broadband Internet - GoR">Fiber Broadband Internet - GoR</option>
-                        <option value="Cloud Computing">Cloud Computing</option>
-                        <option value="Projects">Projects</option>
-                        <option value="Dark Fiber Lease">Dark Fiber Lease</option>
-                        <option value="VOIP">VOIP</option>
-                        <option value="Managed Security Services">Managed Security Services</option>
-                        <option value="Video Conferencing Services">Video Conferencing Services</option>
-                        <option value="Local Content">Local Content</option>
+                        {% for product in products %}
+                          <option value="{{ product }}">{{ product }}</option>
+                        {% endfor %}
                       </select>
                     </div>
                   </div>
@@ -446,7 +434,7 @@
                 <!-- End Title -->
                 <div class="chart">
                   <canvas
-                    id="Chart4"
+                    id="salesTargetsChart"
                     style="width: 100%; height: 420px"
                   ></canvas>
                 </div>

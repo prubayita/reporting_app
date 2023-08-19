@@ -43,6 +43,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!--<script src="{% static 'assets/js/table.js' %}"></script>-->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       <!--The script below handles all charts-->
     <script>
        
@@ -411,64 +412,80 @@
   
         // ================== chart four start
          // Fetch the JSON data from Django template variables
-    var reportData = JSON.parse('{{ report_data|escapejs }}');
-    var targetData = JSON.parse('{{ target_data|escapejs }}');
-    console.log(targetData);
-    console.log(reportData);
-  
-    // Function to calculate the total sales and total targets for each month
-    function calculateTotalsByMonth(data) {
-      const totalsByMonth = {};
-      data.forEach((item) => {
-        const { total_sales, total_targets, sales_month } = item;
-        if (totalsByMonth[sales_month]) {
-          totalsByMonth[sales_month].total_sales += parseFloat(total_sales);
-          totalsByMonth[sales_month].total_targets += parseFloat(total_targets);
-        } else {
-          totalsByMonth[sales_month] = {
-            total_sales: parseFloat(total_sales),
-            total_targets: parseFloat(total_targets),
-          };
-        }
-      });
-      return totalsByMonth;
-    }
-  
-    // Process the JSON data to get total sales and total targets by month
-    const salesTotalsByMonth = calculateTotalsByMonth(reportData);
-    const targetsTotalsByMonth = calculateTotalsByMonth(targetData);
-  
-    // Prepare data for the chart
-    const months2 = Object.keys(salesTotalsByMonth);
-    const months = Object.keys(targetsTotalsByMonth);
-    const salesData = months2.map((month) => salesTotalsByMonth[month].total_sales);
-    const targetsData = months.map((month) => targetsTotalsByMonth[month].total_targets);
-  
-    // Create the chart
-    const ctx = document.getElementById("Chart4").getContext("2d");
-    const chart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: months,
-        datasets: [
-          {
-            label: "Total Sales",
-            backgroundColor: "#4A6CF7",
-            data: salesData,
-          },
-          {
-            label: "Total Targets",
-            backgroundColor: "#d50100",
-            data: targetsData,
-          },
-        ],
-      },
-      options: {
-        // Add any additional options here if needed
-        // For example, you can customize tooltips, axis labels, etc.
-        
-      },
-    });
+         var reportData = JSON.parse('{{ report_data|escapejs }}');
+         var targetData = JSON.parse('{{ target_data|escapejs }}');
+         
+         function calculateTotalsByMonth(data) {
+           const totalsByMonth = {};
+           data.forEach((item) => {
+             const { total_sales, total_targets, sales_month } = item;
+             if (!totalsByMonth[sales_month]) {
+               totalsByMonth[sales_month] = { total_sales: 0, total_targets: 0 };
+             }
+             totalsByMonth[sales_month].total_sales += parseFloat(total_sales);
+             totalsByMonth[sales_month].total_targets += parseFloat(total_targets);
+           });
+           return totalsByMonth;
+         }
+     
+         const salesTotalsByMonth = calculateTotalsByMonth(reportData);
+         const targetsTotalsByMonth = calculateTotalsByMonth(targetData);
+     
+         const months = Object.keys(targetsTotalsByMonth);
+         const salesData = months.map((month) => salesTotalsByMonth[month]?.total_sales || 0);
+         const targetsData = months.map((month) => targetsTotalsByMonth[month]?.total_targets || 0);
+     
+         const ctx = document.getElementById("salesTargetsChart").getContext("2d");
+         const chart = new Chart(ctx, {
+           type: "bar",
+           data: {
+             labels: months,
+             datasets: [
+               {
+                 label: "Total Sales",
+                 backgroundColor: "#4A6CF7",
+                 data: salesData,
+               },
+               {
+                 label: "Total Targets",
+                 backgroundColor: "#d50100",
+                 data: targetsData,
+               },
+             ],
+           },
+           options: {
+             // Add any additional options here if needed
+           },
+         });
+     
+         document.getElementById("account-manager-filter").addEventListener("change", updateChart);
+         document.getElementById("product-filter").addEventListener("change", updateChart);
+     
+         function updateChart() {
+           const selectedAccount_manager = document.getElementById("account-manager-filter").value;
+           const selectedProduct = document.getElementById("product-filter").value;
+     
+           const filteredReportData = reportData.filter(item =>
+             (!selectedAccount_manager || item.account_manager === selectedAccount_manager) &&
+             (!selectedProduct || item.product === selectedProduct)
+           );
+     
+           const filteredtargetData = targetData.filter(item =>
+             (!selectedAccount_manager || item.account_manager === selectedAccount_manager) &&
+             (!selectedProduct || item.product === selectedProduct)
+           );
+     
+           const filteredSalesTotalsByMonth = calculateTotalsByMonth(filteredReportData);
+           const filteredTargetsData = calculateTotalsByMonth(filteredtargetData);
+     
+           const filteredMonths = Object.keys(filteredSalesTotalsByMonth);
+     
+           chart.data.labels = filteredMonths;
+           chart.data.datasets[0].data = filteredMonths.map(month => filteredSalesTotalsByMonth[month]?.total_sales || 0);
+           chart.data.datasets[1].data = filteredMonths.map(month => filteredTargetsData[month]?.total_targets || 0);
+     
+           chart.update();
+         }
         // =========== chart four end
         var allData = JSON.parse('{{ report_data|escapejs }}');
       </script>
@@ -715,7 +732,6 @@
            console.log(accountManagerSales); // Display the accountManagerSales object in the console
        
            // Update the chart after calculating account manager sales
-           updateChart(filteredData);
          }
        
          // Function to filter the table based on the selected filters
@@ -746,56 +762,8 @@
            populateTable(filteredData, currentPage); // Update the table with the filtered data
            updatePaginationButtons();
            calculateAccountManagerSales();
-           updateChart(filteredData); // Pass the filtered data to the updateChart function
          }
        
-         function updateChart(data) {
-             var salesMonthFilter = $('#sales-month-filter').val();
-             var accountManagerFilter = $('#account-manager-filter').val();
-             var profileFilter = $('#profile-filter').val();
-             var productFilter = $('#product-filter').val();
-             var customerCategoryFilter = $('#customer-category-filter').val();
-             var sectorFilter = $('#sector-filter').val();
-         
-             // Filter the JSON data based on the selected filters
-             var filteredData = jsonData.filter(function (item) {
-               return (
-                 (salesMonthFilter === '' || item.sales_month.toLowerCase().includes(salesMonthFilter.toLowerCase())) &&
-                 (accountManagerFilter === '' || item.account_manager.toLowerCase().includes(accountManagerFilter.toLowerCase())) &&
-                 (profileFilter === '' || item.profile.toLowerCase().includes(profileFilter.toLowerCase())) &&
-                 (productFilter === '' || item.product.toLowerCase().includes(productFilter.toLowerCase())) &&
-                 (customerCategoryFilter === '' || item.customer_category.toLowerCase().includes(customerCategoryFilter.toLowerCase())) &&
-                 (sectorFilter === '' || item.sector.toLowerCase().includes(sectorFilter.toLowerCase()))
-               );
-             });
-         
-             // Process the data to get total sales for each month
-             var monthlySales = {
-               January: 0,
-               February: 0,
-               March: 0,
-               April: 0,
-               May: 0,
-               June: 0,
-               July: 0,
-               August: 0,
-               September: 0,
-               October: 0,
-               November: 0,
-               December: 0,
-             };
-         
-             filteredData.forEach(function (item) {
-               var salesMonth = item.sales_month.trim();
-               monthlySales[salesMonth] += item.qty * item.price;
-             });
-         
-             // Get the chart canvas and update the chart data
-             chart4.data.datasets[0].data = Object.values(monthlySales);
-             chart4.data.datasets[1].data = Object.values(monthlySales);
-             // Update the chart
-             chart4.update();
-         }
        
          // Function to filter the table based on the search keyword
        function searchTable() {
@@ -824,7 +792,6 @@
          updatePaginationButtons();
          populateTable(filteredData, currentPage); // Update the table with the filtered data
          calculateAccountManagerSales();
-         updateChart(filteredData); // Pass the filtered data to the updateChart function
        }
       
      
@@ -1003,5 +970,6 @@
     <script>
       
     </script>
+    
     </body>
 </html>

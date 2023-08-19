@@ -10,52 +10,6 @@ class Target(models.Model):
     sales_month = models.CharField(max_length=20)
 
 class Report(models.Model):
-    # DISTRICT_CHOICES = [
-    #     ('Bugesera', 'Bugesera'),
-    #     ('Burera', 'Burera'),
-    #     ('Gakenke', 'Gakenke'),
-    #     ('Gasabo', 'Gasabo'),
-    #     ('Gatsibo', 'Gatsibo'),
-    #     ('Gicumbi', 'Gicumbi'),
-    #     ('Gisagara', 'Gisagara'),
-    #     ('Huye', 'Huye'),
-    #     ('Kamonyi', 'Kamonyi'),
-    #     ('Karongi', 'Karongi'),
-    #     ('Kayonza', 'Kayonza'),
-    #     ('Kicukiro', 'Kicukiro'),
-    #     ('Kirehe', 'Kirehe'),
-    #     ('Muhanga', 'Muhanga'),
-    #     ('Musanze', 'Musanze'),
-    #     ('Ngoma', 'Ngoma'),
-    #     ('Ngororero', 'Ngororero'),
-    #     ('Nyabihu', 'Nyabihu'),
-    #     ('Nyagatare', 'Nyagatare'),
-    #     ('Nyamagabe', 'Nyamagabe'),
-    #     ('Nyamasheke', 'Nyamasheke'),
-    #     ('Nyanza', 'Nyanza'),
-    #     ('Nyarugenge', 'Nyarugenge'),
-    #     ('Nyaruguru', 'Nyaruguru'),
-    #     ('Rubavu', 'Rubavu'),
-    #     ('Ruhango', 'Ruhango'),
-    #     ('Rulindo', 'Rulindo'),
-    #     ('Rusizi', 'Rusizi'),
-    #     ('Rutsiro', 'Rutsiro'),
-    #     ('Rwamagana', 'Rwamagana'),
-    #     ('Kenya', 'Kenya'),
-    #     ('Tanzania', 'Tanzania'),
-    # ]
-    # PROFILE_CHOICES = [
-    #     ('Government', 'Government'),
-    #     ('Private', 'Private'),
-    # ]
-    # SECTOR_CHOICES = [
-    #     ('CENTRAL GOV', 'CENTRAL GOV'),
-    #     ('TECH', 'TECH'),
-    # ]
-
-    # district = models.CharField(max_length=100, choices=DISTRICT_CHOICES)
-    # profile = models.CharField(max_length=20, choices=PROFILE_CHOICES)
-    # sector = models.CharField(max_length=20, choices=SECTOR_CHOICES)
 
     bp_code = models.CharField(max_length=10)
     bp_name = models.CharField(max_length=100)
