@@ -138,7 +138,7 @@ def graph_data_view2(request):
 
     # Extract unique account managers and products
     account_managers = list(set(item['account_manager'] for item in report_data))
-    products = list(set(item['product'] for item in report_data))
+    products = list(set(item['product'].strip() for item in target_data))  # Use strip() here
 
     # Convert QuerySet to JSON
     target_data_json = json.dumps(list(target_data))

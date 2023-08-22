@@ -4,6 +4,20 @@
   <title>Graph</title>
   <!-- Include the Chart.js library -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Include the D3.js library -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    /* Add styles for the tooltip */
+    .tooltip {
+      position: absolute;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
   <div id="filters">
@@ -24,7 +38,8 @@
     </select>
   </div>
 
-  <canvas id="salesTargetsChart" width="400" height="100"></canvas>
+  <div id="chart"></div>
+
   <script>
     var reportData = JSON.parse('{{ report_data|escapejs }}');
     var targetData = JSON.parse('{{ target_data|escapejs }}');
@@ -42,64 +57,117 @@
       return totalsByMonth;
     }
 
-    const salesTotalsByMonth = calculateTotalsByMonth(reportData);
-    const targetsTotalsByMonth = calculateTotalsByMonth(targetData);
+    const svgWidth = 800;
+    const svgHeight = 400;
+    const margin = { top: 20, right: 30, bottom: 40, left: 50 };
+    const width = svgWidth - margin.left - margin.right;
+    const height = svgHeight - margin.top - margin.bottom;
 
-    const months = Object.keys(targetsTotalsByMonth);
-    const salesData = months.map((month) => salesTotalsByMonth[month]?.total_sales || 0);
-    const targetsData = months.map((month) => targetsTotalsByMonth[month]?.total_targets || 0);
+    const svg = d3.select("#chart")
+      .append("svg")
+      .attr("width", svgWidth)
+      .attr("height", svgHeight);
 
-    const ctx = document.getElementById("salesTargetsChart").getContext("2d");
-    const chart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: months,
-        datasets: [
-          {
-            label: "Total Sales",
-            backgroundColor: "#4A6CF7",
-            data: salesData,
-          },
-          {
-            label: "Total Targets",
-            backgroundColor: "#d50100",
-            data: targetsData,
-          },
-        ],
-      },
-      options: {
-        // Add any additional options here if needed
-      },
-    });
+    const chartGroup = svg.append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    document.getElementById("accountManagerFilter").addEventListener("change", updateChart);
-    document.getElementById("productFilter").addEventListener("change", updateChart);
+    let xScale = null;
+    let yScale = null;
 
+    const xAxis = d3.axisBottom();
+    const yAxis = d3.axisLeft();
+
+    chartGroup.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", `translate(0,${height})`);
+
+    chartGroup.append("g")
+      .attr("class", "y-axis");
+
+    // Function to create and show tooltips
+    const tooltip = d3.select("body").append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+    // Function to update chart based on filters
     function updateChart() {
-      const selectedAccount_manager = document.getElementById("accountManagerFilter").value;
-      const selectedProduct = document.getElementById("productFilter").value;
-
+      const selectedAccountManager = d3.select("#accountManagerFilter").property("value");
+      const selectedProduct = d3.select("#productFilter").property("value");
+    
+      // Filter data based on selected filters
       const filteredReportData = reportData.filter(item =>
-        (!selectedAccount_manager || item.account_manager === selectedAccount_manager) &&
+        (!selectedAccountManager || item.account_manager === selectedAccountManager) &&
         (!selectedProduct || item.product === selectedProduct)
       );
-
-      const filteredtargetData = targetData.filter(item =>
-        (!selectedAccount_manager || item.account_manager === selectedAccount_manager) &&
+    
+      const filteredTargetData = targetData.filter(item =>
+        (!selectedAccountManager || item.account_manager === selectedAccountManager) &&
         (!selectedProduct || item.product === selectedProduct)
       );
-
+    
       const filteredSalesTotalsByMonth = calculateTotalsByMonth(filteredReportData);
-      const filteredTargetsData = calculateTotalsByMonth(filteredtargetData);
-
+      const filteredTargetsTotalsByMonth = calculateTotalsByMonth(filteredTargetData);
+    
       const filteredMonths = Object.keys(filteredSalesTotalsByMonth);
-
-      chart.data.labels = filteredMonths;
-      chart.data.datasets[0].data = filteredMonths.map(month => filteredSalesTotalsByMonth[month]?.total_sales || 0);
-      chart.data.datasets[1].data = filteredMonths.map(month => filteredTargetsData[month]?.total_targets || 0);
-
-      chart.update();
+    
+      // Update scales and axes
+      xScale = d3.scaleBand()
+        .domain(filteredMonths)
+        .range([0, width])
+        .padding(0.2);
+    
+      yScale = d3.scaleLinear()
+        .domain([0, d3.max(filteredMonths, month => Math.max(filteredSalesTotalsByMonth[month]?.total_sales || 0, filteredTargetsTotalsByMonth[month]?.total_targets || 0))])
+        .range([height, 0]);
+    
+      xAxis.scale(xScale);
+      yAxis.scale(yScale);
+    
+      chartGroup.select(".x-axis").call(xAxis);
+      chartGroup.select(".y-axis").call(yAxis);
+    
+      // Update bars
+      const bars = chartGroup.selectAll(".bar")
+        .data(filteredMonths);
+        
+      bars.enter()
+        .append("rect")
+        .attr("class", "bar")
+        .merge(bars)
+        .transition()
+        .duration(500)
+        .attr("x", month => xScale(month))
+        .attr("y", month => yScale(Math.max(filteredSalesTotalsByMonth[month]?.total_sales || 0, filteredTargetsTotalsByMonth[month]?.total_targets || 0)))
+        .attr("width", xScale.bandwidth())
+        .attr("height", month => height - yScale(Math.max(filteredSalesTotalsByMonth[month]?.total_sales || 0, filteredTargetsTotalsByMonth[month]?.total_targets || 0)))
+        .style("fill", "#4A6CF7")
+        .on("mouseover", function(event, month) {
+          const sales = filteredSalesTotalsByMonth[month]?.total_sales || 0;
+          const targets = filteredTargetsTotalsByMonth[month]?.total_targets || 0;
+    
+          tooltip.transition()
+            .duration(200)
+            .style("opacity", 0.9);
+    
+          tooltip.html(`Month: ${month}<br>Sales: ${sales}<br>Targets: ${targets}`)
+            .style("left", (event.pageX) + "px")
+            .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", function() {
+          tooltip.transition()
+            .duration(500)
+            .style("opacity", 0);
+        });
+        
+      bars.exit().remove();
     }
+  
+    // Add event listeners to filters and update the chart accordingly
+    d3.select("#accountManagerFilter").on("change", updateChart);
+    d3.select("#productFilter").on("change", updateChart);
+
+    // Initial chart rendering
+    updateChart();
   </script>
 </body>
 </html>
