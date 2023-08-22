@@ -476,19 +476,22 @@
             (!selectedAccount_manager || item.account_manager === selectedAccount_manager) &&
             (!selectedProduct || item.product.trim() === selectedProduct)
           );
-          console.log("Filtered Target Data:", filteredTargetData); // Corrected variable name here
+          console.log("Filtered Target Data:", filteredTargetData);
         
           const filteredSalesTotalsByMonth = calculateTotalsByMonth(filteredReportData);
-          const filteredTargetsData = calculateTotalsByMonth(filteredTargetData); // Corrected variable name here
+          console.log("Filtered Sales Totals:", filteredSalesTotalsByMonth);
         
-          const filteredMonths = Object.keys(filteredSalesTotalsByMonth);
+          const filteredTargetsTotalsByMonth = calculateTotalsByMonth(filteredTargetData);
+          console.log("Filtered Targets Totals:", filteredTargetsTotalsByMonth);
+        
+          const filteredMonths = Object.keys(filteredTargetsTotalsByMonth);
         
           chart.data.labels = filteredMonths;
           chart.data.datasets[0].data = filteredMonths.map(month => filteredSalesTotalsByMonth[month]?.total_sales || 0);
-          chart.data.datasets[1].data = filteredMonths.map(month => filteredTargetsData[month]?.total_targets || 0);
-          console.log(filteredTargetData); // Corrected variable name here
+          chart.data.datasets[1].data = filteredMonths.map(month => filteredTargetsTotalsByMonth[month]?.total_targets || 0);
           chart.update();
         }
+        
         // =========== chart four end
         var allData = JSON.parse('{{ report_data|escapejs }}');
       </script>
