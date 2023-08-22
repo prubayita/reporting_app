@@ -462,30 +462,33 @@
          document.getElementById("product-filter").addEventListener("change", updateChart);
      
          function updateChart() {
-           const selectedAccount_manager = document.getElementById("account-manager-filter").value;
-           const selectedProduct = document.getElementById("product-filter").value;
-     
-           const filteredReportData = reportData.filter(item =>
-             (!selectedAccount_manager || item.account_manager === selectedAccount_manager) &&
-             (!selectedProduct || item.product === selectedProduct)
-           );
-     
-           const filteredtargetData = targetData.filter(item =>
-             (!selectedAccount_manager || item.account_manager === selectedAccount_manager) &&
-             (!selectedProduct || item.product === selectedProduct)
-           );
-     
-           const filteredSalesTotalsByMonth = calculateTotalsByMonth(filteredReportData);
-           const filteredTargetsData = calculateTotalsByMonth(filteredtargetData);
-     
-           const filteredMonths = Object.keys(filteredSalesTotalsByMonth);
-     
-           chart.data.labels = filteredMonths;
-           chart.data.datasets[0].data = filteredMonths.map(month => filteredSalesTotalsByMonth[month]?.total_sales || 0);
-           chart.data.datasets[1].data = filteredMonths.map(month => filteredTargetsData[month]?.total_targets || 0);
-     
-           chart.update();
-         }
+          const selectedAccount_manager = document.getElementById("account-manager-filter").value;
+          const selectedProduct = document.getElementById("product-filter").value.trim(); // Trim spaces from the product name
+          console.log("Selected Product:", selectedProduct);
+        
+          const filteredReportData = reportData.filter(item =>
+            (!selectedAccount_manager || item.account_manager === selectedAccount_manager) &&
+            (!selectedProduct || item.product.trim() === selectedProduct)
+          );
+          console.log("Filtered Report Data:", filteredReportData);
+        
+          const filteredTargetData = targetData.filter(item =>
+            (!selectedAccount_manager || item.account_manager === selectedAccount_manager) &&
+            (!selectedProduct || item.product.trim() === selectedProduct)
+          );
+          console.log("Filtered Target Data:", filteredTargetData); // Corrected variable name here
+        
+          const filteredSalesTotalsByMonth = calculateTotalsByMonth(filteredReportData);
+          const filteredTargetsData = calculateTotalsByMonth(filteredTargetData); // Corrected variable name here
+        
+          const filteredMonths = Object.keys(filteredSalesTotalsByMonth);
+        
+          chart.data.labels = filteredMonths;
+          chart.data.datasets[0].data = filteredMonths.map(month => filteredSalesTotalsByMonth[month]?.total_sales || 0);
+          chart.data.datasets[1].data = filteredMonths.map(month => filteredTargetsData[month]?.total_targets || 0);
+          console.log(filteredTargetData); // Corrected variable name here
+          chart.update();
+        }
         // =========== chart four end
         var allData = JSON.parse('{{ report_data|escapejs }}');
       </script>
