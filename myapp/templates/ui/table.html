@@ -11,17 +11,15 @@
     <table>
         <thead>
             <tr>
-                <th>Product</th>
-                {% for account_manager, _ in summary_data.items %}
-                    <th>{{ account_manager }}</th>
-                {% endfor %}
+                <th>Account Manager</th>
+                <!-- Add other table headers here -->
             </tr>
         </thead>
         <tbody>
-            {% for product, manager_totals in summary_data.items %}
+            {% for account_manager, product_totals in summary_data.items %}
                 <tr>
-                    <td>{{ product }}</td>
-                    {% for _, total in manager_totals.items %}
+                    <td>{{ account_manager }}</td>
+                    {% for product, total in product_totals.items %}
                         <td>{{ total }}</td>
                     {% endfor %}
                 </tr>

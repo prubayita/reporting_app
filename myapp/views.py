@@ -184,6 +184,8 @@ def monthly2(request):
     # Filter the data based on the sales_month
     # Create a dictionary to store aggregated data by account_manager and product
     summary_data = defaultdict(dict)
+    # report_data = Report.objects.filter(sales_month__iexact=sales_month).values()
+    # target_data = Target.objects.filter(sales_month__iexact=sales_month).values()
 
     # Calculate totals for each unique combination of account_manager and product in the report data
     for record in report_data:
@@ -199,8 +201,6 @@ def monthly2(request):
 
         summary_data[account_manager][product] += total_sales
 
-    # report_data = Report.objects.filter(sales_month__iexact=sales_month).values()
-    # target_data = Target.objects.filter(sales_month__iexact=sales_month).values()
 
     context = {
         'summary_data': summary_data,
@@ -212,38 +212,35 @@ def monthly2(request):
 
 
 
-# def monthly2(request):
-#     # Retrieve filter parameters from the GET request
-#     sales_month = request.GET.get('sales_month', '')
-#     product = request.GET.get('product', '')
-#     account_manager = request.GET.get('account_manager', '')
+def monthly2(request):
+    # Retrieve filter parameter (sales_month) from the GET request
+    sales_month = request.GET.get('sales_month', '')
 
-#     # Build filters based on the provided parameters
-#     report_filters = {}
-#     target_filters = {}
+    # Filter the data based on the sales_month
+    report_data = Report.objects.filter(sales_month=sales_month).values()
+    target_data = Target.objects.filter(sales_month=sales_month).values()
 
-#     if sales_month:
-#         report_filters['sales_month__iexact'] = sales_month
-#         target_filters['sales_month__iexact'] = sales_month
+    # Create a dictionary to store aggregated data by account_manager and product
+    summary_data = defaultdict(dict)
 
-#     if product:
-#         report_filters['product__iexact'] = product
-#         target_filters['product__iexact'] = product
+    # Calculate totals for each unique combination of account_manager and product in the report data
+    for record in report_data:
+        account_manager = record['account_manager']
+        product = record['product']
+        total_sales = record['total_sales']
 
-#     if account_manager:
-#         report_filters['account_manager__iexact'] = account_manager
-#         target_filters['account_manager__iexact'] = account_manager
+        if account_manager not in summary_data:
+            summary_data[account_manager] = {}
 
-#     # Query the database with the applied filters
-#     report_data = Report.objects.filter(**report_filters).values()
-#     target_data = Target.objects.filter(**target_filters).values()
+        if product not in summary_data[account_manager]:
+            summary_data[account_manager][product] = 0
 
-#     context = {
-#         'report_data': report_data,
-#         'target_data': target_data,
-#         'sales_month': sales_month,
-#         'product': product,
-#         'account_manager': account_manager,
-#     }
+        summary_data[account_manager][product] += total_sales
 
-#     return render(request, 'ui/table.html', context)
+    context = {
+        'summary_data': summary_data,
+        'sales_month': sales_month,
+    }
+
+
+    return render(request, 'ui/table.html', context)
