@@ -3,130 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple D3.js Bar Chart</title>
-    <!-- Include D3.js library from a CDN -->
-    <script src="https://d3js.org/d3.v6.min.js"></script>
-    <style>
-        /* Add some basic CSS styles for the chart */
-        .bar {
-            fill: steelblue;
-        }
-    </style>
+    <title>Summary Data</title>
 </head>
 <body>
-    <h1>Simple D3.js Bar Chart</h1>
-    <svg id="bar-chart"></svg>
-
-
-    <script>
-       // Parse the JSON data from Django
-       const reportData = JSON.parse('{{ report_data|safe }}');
-       const targetData = JSON.parse('{{ target_data|safe }}');
-//console.log(reportData)
-//const months = Array.from(new Set(reportData.map(d => d.sales_month).concat(targetData.map(d => d.sales_month))));
-      const months = Array.from(new Set(reportData.map(d => d.sales_month.trim()).concat(targetData.map(d => d.sales_month.trim()))));
-
-
-      // Create an array to hold combined data for sales and target
-      const combinedData = months.map(month => {
-          const sales = reportData.find(d => d.sales_month === month)?.total_sales || 0;
-          const target = targetData.find(d => d.sales_month === month)?.total_targets || 0;
-
-          return { month, sales: +sales, target: +target };
-      });
-
-      // Set up dimensions and margins
-      const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-      const width = 800 - margin.left - margin.right;
-      const height = 400 - margin.top - margin.bottom;
-
-      // Create an SVG canvas
-      const svg = d3.select("#bar-chart")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-          .attr("transform", `translate(${margin.left},${margin.top})`);
-
-      // Define x and y scales
-      const xScale = d3.scaleBand()
-          .domain(combinedData.map(d => d.month))
-          .range([0, width])
-          .padding(0.1);
-
-      const yScale = d3.scaleLinear()
-          .domain([0, d3.max(combinedData, d => Math.max(d.sales, d.target))])
-          .nice()
-          .range([height, 0]);
-
-      // Create and append the sales bars
-      svg.selectAll(".bar-sales")
-          .data(combinedData)
-          .enter().append("rect")
-          .attr("class", "bar-sales")
-          .attr("x", d => xScale(d.month))
-          .attr("y", d => yScale(d.sales))
-          .attr("width", xScale.bandwidth())
-          .attr("height", d => height - yScale(d.sales));
-
-      // Create and append the target bars
-      svg.selectAll(".bar-target")
-          .data(combinedData)
-          .enter().append("rect")
-          .attr("class", "bar-target")
-          .attr("x", d => xScale(d.month))
-          .attr("y", d => yScale(d.target))
-          .attr("width", xScale.bandwidth())
-          .attr("height", d => height - yScale(d.target));
-
-      // Add x and y axes
-      svg.append("g")
-          .attr("transform", `translate(0,${height})`)
-          .call(d3.axisBottom(xScale));
-
-      svg.append("g")
-          .call(d3.axisLeft(yScale));
-
-      // Add labels
-      svg.append("text")
-          .attr("x", width / 2)
-          .attr("y", height + margin.bottom)
-          .text("Month");
-
-      svg.append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("y", -margin.left)
-          .attr("x", -height / 2)
-          .attr("dy", "1em")
-          .style("text-anchor", "middle")
-          .text("Sales vs. Target");
-
-      // Add a legend
-      const legend = svg.append("g")
-          .attr("transform", `translate(${width - 150},${margin.top})`);
-
-      legend.append("rect")
-          .attr("width", 12)
-          .attr("height", 12)
-          .attr("fill", "steelblue");
-
-      legend.append("text")
-          .attr("x", 20)
-          .attr("y", 6)
-          .attr("dy", "0.7em")
-          .text("Sales");
-
-      legend.append("rect")
-          .attr("width", 12)
-          .attr("height", 12)
-          .attr("fill", "red")
-          .attr("transform", "translate(0,20)");
-
-      legend.append("text")
-          .attr("x", 20)
-          .attr("y", 26)
-          .attr("dy", "0.7em")
-          .text("Target");
-
-    </script>
+    <h1>Summary Data for {{ sales_month }}</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                {% for account_manager, _ in summary_data.items %}
+                    <th>{{ account_manager }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for product, manager_totals in summary_data.items %}
+                <tr>
+                    <td>{{ product }}</td>
+                    {% for _, total in manager_totals.items %}
+                        <td>{{ total }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

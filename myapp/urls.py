@@ -8,6 +8,7 @@ urlpatterns = [
     path('t', views.graph_data_view, name='graph_data_view'),
     path('t2', views.graph_data_view2, name='graph_data_view2'),
     path('m', views.monthly, name='monthly'),
+    path('m2', views.monthly2, name='monthly2'),
     path('table', views.table, name='table'),
     path('login', views.login, name='login'),
 ]

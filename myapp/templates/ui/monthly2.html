@@ -1,0 +1,278 @@
+
+{% extends "base.html" %}
+
+{% load static %}
+{% block content %}
+
+
+   <style>
+    .main-btn2 {
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  padding: 15px 15px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 4px;
+  border-radius: 64px;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.4s ease-in-out;
+  border: 1px solid transparent;
+  overflow: hidden;
+  margin: 5px
+}
+    .pagination-buttons-container {
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  bottom: 20px; /* Adjust this value to set the desired distance from the bottom */
+  left: 0;
+  right: 0;
+  z-index: 999; /* Ensure the buttons appear above other elements */
+}
+#map {
+  height: 500px;
+ }
+.select-style-1 .select-position.select-sm::after {
+    margin-top: 8px;
+  }
+   </style>
+    <!-- ======== sidebar-nav end =========== -->
+
+    <!-- ======== main-wrapper start =========== -->
+    
+      <!-- ========== header start ========== -->
+
+      <!-- ========== header end ========== -->
+
+      <!-- ========== section start ========== -->
+      <section class="section">
+        <div class="container-fluid">
+          <!-- ========== title-wrapper start ========== -->
+          <div class="title-wrapper pt-30">
+            <div class="row align-items-center">
+              <div class="col-md-6">
+                <div class="title mb-30">
+                  <h2>Monthly Dashboard</h2>
+                </div>
+              </div>
+              <!-- end col -->
+              <div class="col-md-6">
+                <div class="breadcrumb-wrapper mb-30">
+                  <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                      <li class="breadcrumb-item">
+                        <a href="#0">Dashboard</a>
+                      </li>
+                      <li class="breadcrumb-item active" aria-current="page">
+                        Monthly
+                      </li>
+                    </ol>
+                  </nav>
+                </div>
+              </div>
+              <!-- end col -->
+            </div>
+            <!-- end row -->
+          </div>
+          <!-- ========== title-wrapper end ========== -->
+          <div class="row visually-hidden">
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+              <div class="icon-card mb-30">
+                <div class="icon success">
+                  <i class="lni lni-dollar"></i>
+                </div>
+                <div class="content">
+                  <h6 class="mb-10">Total Income</h6>
+                  <h3 class="text-bold mb-10" id="total-sales"></h3>
+                  <p class="text-sm text-success" id="percentage-difference">
+                   
+                  </p>
+                </div>
+              </div>
+              <!-- End Icon Cart -->
+            </div>
+            <!-- End Col -->
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+              <div class="icon-card mb-30">
+                <div class="icon primary">
+                  <i class="lni lni-credit-cards"></i>
+                </div>
+                <div class="content">
+                  <h6 class="mb-10">Total Target</h6>
+                  <h3 class="text-bold mb-10" id="total-targets"></h3>
+                </div>
+              </div>
+              <!-- End Icon Cart -->
+            </div>
+            <!-- End Col -->
+          </div>
+          <!-- End Row -->
+
+          <!-- FILTERS -->
+          <div class="row" id="targetDiv">
+            <div class="col-lg-12">
+              <div class="card-style mb-30">
+                <!-- Use "d-flex" to create a flex container and "flex-wrap" to wrap the items to the next line if necessary. -->
+                <div class="d-flex flex-wrap align-items-center justify-content-between">
+                  <!-- "mb-2" adds margin-bottom to create spacing between the filters. -->
+                  <div class="select-style-1 mb-2">
+                    <div class="select-position select-sm">
+                      <label for="sales-month-filter2">Sales Month:</label>
+                      <!-- The "light-bg" class is used for styling purposes. -->
+                      <select id="sales-month-filter2" class="light-bg">
+                        <!-- Options for Sales Month -->
+                        <option value="">All</option>
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October">October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                      </select>
+                    </div>
+                  </div>
+          
+                  <!-- Repeat the same structure for other filters. -->
+     
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--all sales-->
+          <div class="row">
+            <div class="col-lg-12">
+           <div class="card-style mb-30">
+             <div class="title d-flex flex-wrap align-items-center justify-content-between ">
+               <div class="left">
+                 <h6 class="text-medium mb-30">Product performance</h6>
+               </div>
+               
+             </div>
+             <!-- End Title -->
+             <div class="table-responsive">
+              <table id="product-account-manager-table" class="table top-selling-table">
+                  <thead>
+                      <tr>
+                          <th>
+                              <h6 class="text-sm text-medium">Products</h6>
+                          </th>
+                          <!-- Dynamically generate th elements for account managers -->
+                          {% for account_manager in account_managers %}
+                              <th>
+                                  <h6 class="text-sm text-medium">{{ account_manager }}</h6>
+                              </th>
+                          {% endfor %}
+                          <th>
+                              <h6 class="text-sm text-medium">Grand Total</h6>
+                          </th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Loop through products -->
+                    {% for product in products %}
+                        <tr>
+                            <td>{{ product }}</td>
+                            <!-- Loop through account managers for each product -->
+                            {% for account_manager in account_managers %}
+                            <td>
+                              <!-- Display total sales and toct_lookup_with_tal targets based on the processed data -->
+                              
+                          </td>
+                          
+                            {% endfor %}
+                            <td>
+                                <!-- Calculate and display the grand total for each product -->
+                                {% with product_sales=sales_data|dict_lookup:product %}
+                                    {{ product_sales|dict_sum:"total_sales"|default:"0" }} /
+                                    {{ product_sales|dict_sum:"total_targets"|default:"0" }}
+                                {% endwith %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+              <!-- End Table -->
+          </div>
+           </div>
+         </div>
+       </div>
+          
+        <!-- end container -->
+      </section>
+      <!-- ========== section end ========== -->
+
+      <!-- ========== footer start =========== -->
+      <footer class="footer">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-6 order-last order-md-first">
+              <div class="copyright text-center text-md-start">
+                <p class="text-sm">
+                  Designed and Developed by
+                  <a
+                    href="https://bsc.rw"
+                    rel="nofollow"
+                    target="_blank"
+                  >
+                    BSC Ltd.
+                  </a>
+                </p>
+              </div>
+            </div>
+            <!-- end col-->
+            <div class="col-md-6">
+              <div
+                class="
+                  terms
+                  d-flex
+                  justify-content-center justify-content-md-end
+                "
+              >
+                <a href="#0" class="text-sm">Term & Conditions</a>
+                <a href="#0" class="text-sm ml-15">Privacy & Policy</a>
+              </div>
+            </div>
+          </div>
+          <!-- end row -->
+        </div>
+        <!-- end container -->
+      </footer>
+      <!-- ========== footer end =========== -->
+    </main>
+    <!-- ======== main-wrapper end =========== -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+        // Hide the div initially (optional)
+        $('#targetDiv').hide();
+    
+        // Add click event listener to the button
+        $('#toggleButton').on('click', function() {
+        // Toggle the visibility of the div
+        $('#targetDiv').toggle();
+        });
+        });
+    </script>
+    
+  
+    <script>
+     
+    </script>
+    
+    
+{% endblock content %}
