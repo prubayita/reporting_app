@@ -1,27 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Summary Data</title>
+    <title>Performance Report</title>
 </head>
 <body>
-    <h1>Summary Data for {{ sales_month }}</h1>
+    <h1>Performance Report</h1>
+    <form method="get">
+        <label for="month">Select Month:</label>
+        <select name="month" id="month">
+            <option value="">All</option>
+            <!-- Populate this dropdown with available months from your data -->
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <!-- Add other months here -->
+        </select>
+        <button type="submit">Filter</button>
+    </form>
     
     <table>
         <thead>
             <tr>
-                <th>Account Manager</th>
-                <!-- Add other table headers here -->
+                <th>PRODUCTS</th>
+                <th>Actuals</th>
+                <th>Target</th>
+                <th>Performance</th>
             </tr>
         </thead>
         <tbody>
-            {% for account_manager, product_totals in summary_data.items %}
+            {% for product, data in performance_data.items %}
                 <tr>
-                    <td>{{ account_manager }}</td>
-                    {% for product, total in product_totals.items %}
-                        <td>{{ total }}</td>
-                    {% endfor %}
+                    <td>{{ product }}</td>
+                    <td>{{ data.actual_sales }}</td>
+                    <td>{{ data.total_target }}</td>
+                    <td>{{ data.performance }}%</td>
                 </tr>
             {% endfor %}
         </tbody>

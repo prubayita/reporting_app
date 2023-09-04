@@ -5,7 +5,7 @@ from datetime import date
 
 class Target(models.Model):
     product = models.CharField(max_length=100)
-    total_targets = models.DecimalField(max_digits=20, decimal_places=2, editable=False)
+    total_targets = models.IntegerField()
     account_manager = models.CharField(max_length=100)
     sales_month = models.CharField(max_length=20)
 

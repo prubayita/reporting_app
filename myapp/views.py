@@ -176,71 +176,88 @@ def graph_data_view2(request):
 
 #     return render(request, 'ui/monthly2.html', context)
 
-def monthly2(request):
-    report_data = Report.objects.all().values()
-    # Retrieve filter parameter (sales_month) from the GET request
-    sales_month = request.GET.get('sales_month', '')
+# def monthly2(request):
+#     report_data = Report.objects.all().values()
+#     # Retrieve filter parameter (sales_month) from the GET request
+#     sales_month = request.GET.get('sales_month', '')
 
-    # Filter the data based on the sales_month
-    # Create a dictionary to store aggregated data by account_manager and product
-    summary_data = defaultdict(dict)
-    # report_data = Report.objects.filter(sales_month__iexact=sales_month).values()
-    # target_data = Target.objects.filter(sales_month__iexact=sales_month).values()
+#     # Filter the data based on the sales_month
+#     # Create a dictionary to store aggregated data by account_manager and product
+#     summary_data = defaultdict(dict)
+#     # report_data = Report.objects.filter(sales_month__iexact=sales_month).values()
+#     # target_data = Target.objects.filter(sales_month__iexact=sales_month).values()
 
-    # Calculate totals for each unique combination of account_manager and product in the report data
-    for record in report_data:
-        account_manager = record['account_manager']
-        product = record['product']
-        total_sales = record['total_sales']
+#     # Calculate totals for each unique combination of account_manager and product in the report data
+#     for record in report_data:
+#         account_manager = record['account_manager']
+#         product = record['product']
+#         total_sales = record['total_sales']
 
-        if account_manager not in summary_data:
-            summary_data[account_manager] = {}
+#         if account_manager not in summary_data:
+#             summary_data[account_manager] = {}
 
-        if product not in summary_data[account_manager]:
-            summary_data[account_manager][product] = 0
+#         if product not in summary_data[account_manager]:
+#             summary_data[account_manager][product] = 0
 
-        summary_data[account_manager][product] += total_sales
+#         summary_data[account_manager][product] += total_sales
 
 
-    context = {
-        'summary_data': summary_data,
-        'sales_month': sales_month,
-    }
-    print(summary_data)
+#     context = {
+#         'summary_data': summary_data,
+#         'sales_month': sales_month,
+#     }
+#     print(summary_data)
     
-    return render(request, 'ui/table.html', context)
+#     return render(request, 'ui/table.html', context)
 
 
 
 def monthly2(request):
     # Retrieve filter parameter (sales_month) from the GET request
-    sales_month = request.GET.get('sales_month', '')
+    # selected_month  = request.GET.get('sales_month', '')
 
     # Filter the data based on the sales_month
-    report_data = Report.objects.filter(sales_month=sales_month).values()
-    target_data = Target.objects.filter(sales_month=sales_month).values()
-
-    # Create a dictionary to store aggregated data by account_manager and product
-    summary_data = defaultdict(dict)
-
-    # Calculate totals for each unique combination of account_manager and product in the report data
-    for record in report_data:
-        account_manager = record['account_manager']
-        product = record['product']
-        total_sales = record['total_sales']
-
-        if account_manager not in summary_data:
-            summary_data[account_manager] = {}
-
-        if product not in summary_data[account_manager]:
-            summary_data[account_manager][product] = 0
-
-        summary_data[account_manager][product] += total_sales
-
+  # Fetch data from the database and perform calculations
+    # actuals = Report.objects.filter(sales_month=selected_month).aggregate(Sum('total_sales'))['total_sales__sum'] or Decimal(0)
+    selected_month = 'February'
+    # Filter records for the selected month
+    # Filter records for the selected month
+    actuals = Report.objects.filter(sales_month=selected_month)
+    
+    # Calculate the sum of 'total_sales' for each product
+    product_actuals = actuals.values('product').annotate(total_actuals=Sum('total_sales'))
+    
+    # Get the target values from the Target model for the selected month
+    # target_values = Target.objects.filter(sales_month=selected_month).values('product', 'total_targets')
+    target_values = Target.objects.filter(sales_month=selected_month)
+    product_target=target_values.values('product').annotate(total_targ=Sum('total_targets'))
+    # Create a dictionary to store product-wise performance
+    performance_data = {}
+    
+    # Calculate performance for each product
+    for target in product_target:
+        product = target['product']
+        total_target = target['total_targ']
+        
+        # Look up the actuals for the product and order by 'total_actuals'
+        actual = product_actuals.filter(product=product).order_by('-total_actuals').first()
+        
+        if actual:
+            actual_sales = actual['total_actuals']
+            performance = (actual_sales / total_target) * 100 if total_target != 0 else 0
+        else:
+            actual_sales = 0
+            performance = 0
+        
+        performance_data[product] = {
+            'actual_sales': actual_sales,
+            'total_target': total_target,
+            'performance': performance,
+        }
+    
     context = {
-        'summary_data': summary_data,
-        'sales_month': sales_month,
+        'performance_data': performance_data,
+        'selected_month': selected_month,
     }
-
 
     return render(request, 'ui/table.html', context)
