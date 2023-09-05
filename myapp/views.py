@@ -152,64 +152,6 @@ def graph_data_view2(request):
     })
 
 
-# def monthly2(request):
-#     report_data = Report.objects.all().values()
-#     target_data = Target.objects.all().values()
-#     context= {
-#         'report_data': report_data, 
-#         'target_data': target_data
-#         }
-#     print(report_data)
-#     return render(request, 'ui/monthly2.html', context)
-
-# def monthly2(request):
-   
-#     report_data = Report.objects.values_list('product', flat=True).distinct()
-
-#     # Convert the queryset to a set to eliminate duplicates
-#     unique_products = set(report_data)
-
-#     context = {
-#         'unique_products': unique_products,
-#     }
-#     print(unique_products)    
-
-#     return render(request, 'ui/monthly2.html', context)
-
-# def monthly2(request):
-#     report_data = Report.objects.all().values()
-#     # Retrieve filter parameter (sales_month) from the GET request
-#     sales_month = request.GET.get('sales_month', '')
-
-#     # Filter the data based on the sales_month
-#     # Create a dictionary to store aggregated data by account_manager and product
-#     summary_data = defaultdict(dict)
-#     # report_data = Report.objects.filter(sales_month__iexact=sales_month).values()
-#     # target_data = Target.objects.filter(sales_month__iexact=sales_month).values()
-
-#     # Calculate totals for each unique combination of account_manager and product in the report data
-#     for record in report_data:
-#         account_manager = record['account_manager']
-#         product = record['product']
-#         total_sales = record['total_sales']
-
-#         if account_manager not in summary_data:
-#             summary_data[account_manager] = {}
-
-#         if product not in summary_data[account_manager]:
-#             summary_data[account_manager][product] = 0
-
-#         summary_data[account_manager][product] += total_sales
-
-
-#     context = {
-#         'summary_data': summary_data,
-#         'sales_month': sales_month,
-#     }
-#     print(summary_data)
-    
-#     return render(request, 'ui/table.html', context)
-
 
 
 def monthly2(request):
@@ -219,7 +161,7 @@ def monthly2(request):
     # Filter the data based on the sales_month
   # Fetch data from the database and perform calculations
     # actuals = Report.objects.filter(sales_month=selected_month).aggregate(Sum('total_sales'))['total_sales__sum'] or Decimal(0)
-    selected_month = 'February'
+    selected_month = 'January'
     # Filter records for the selected month
     # Filter records for the selected month
     actuals = Report.objects.filter(sales_month=selected_month)
