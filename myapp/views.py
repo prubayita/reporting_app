@@ -15,6 +15,7 @@ from django.db.models import Sum, F
 from .models import Report, Target
 from django.http import JsonResponse
 from collections import defaultdict
+from django.db.models import Max
 
 # Create your views here.
 # def reports(request):
@@ -155,22 +156,18 @@ def graph_data_view2(request):
 
 
 def monthly2(request):
-    # Retrieve filter parameter (sales_month) from the GET request
-    # selected_month  = request.GET.get('sales_month', '')
+     # Find the latest month with available data
+    latest_month = Report.objects.aggregate(Max('sales_month'))['sales_month__max']
 
-    # Filter the data based on the sales_month
+    # Retrieve filter parameter (sales_month) from the GET request
+    selected_month  = request.GET.get('sales_month', latest_month)   
   # Fetch data from the database and perform calculations
-    # actuals = Report.objects.filter(sales_month=selected_month).aggregate(Sum('total_sales'))['total_sales__sum'] or Decimal(0)
-    selected_month = 'January'
-    # Filter records for the selected month
-    # Filter records for the selected month
     actuals = Report.objects.filter(sales_month=selected_month)
     
     # Calculate the sum of 'total_sales' for each product
     product_actuals = actuals.values('product').annotate(total_actuals=Sum('total_sales'))
     
-    # Get the target values from the Target model for the selected month
-    # target_values = Target.objects.filter(sales_month=selected_month).values('product', 'total_targets')
+    # Get the target values from the Target model for the selected month    
     target_values = Target.objects.filter(sales_month=selected_month)
     product_target=target_values.values('product').annotate(total_targ=Sum('total_targets'))
     # Create a dictionary to store product-wise performance
@@ -200,6 +197,7 @@ def monthly2(request):
     context = {
         'performance_data': performance_data,
         'selected_month': selected_month,
+        'latest_month': latest_month,
     }
 
     return render(request, 'ui/table.html', context)

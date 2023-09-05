@@ -6,8 +6,8 @@
 <body>
     <h1>Performance Report</h1>
     <form method="get">
-        <label for="month">Select Month:</label>
-        <select name="month" id="month">
+        <label for="sales_month">Select Month:</label>
+        <select name="sales_month" id="month">
             <option value="">All</option>
             <!-- Populate this dropdown with available months from your data -->
             <option value="January">January</option>
@@ -36,7 +36,7 @@
                     <td>{{ product }}</td>
                     <td>{{ data.actual_sales }}</td>
                     <td>{{ data.total_target }}</td>
-                    <td>{{ data.performance }}%</td>
+                    <td>{{ data.performance|floatformat:2 }}%</td>
                 </tr>
             {% endfor %}
         </tbody>
