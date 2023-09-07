@@ -18,6 +18,8 @@ from collections import defaultdict
 from django.db.models import Max
 from decimal import Decimal
 from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib.auth.decorators import login_required
+from .decorators import *
 
 # Create your views here.
 # def reports(request):
@@ -45,7 +47,7 @@ def logout_view(request):
     logout(request)
     return redirect('login') 
 
-
+@login_required
 def table(request):
   mytable = Report.objects.all().values()
   template = loader.get_template('ui/table.html')
@@ -54,6 +56,7 @@ def table(request):
   }
   return HttpResponse(template.render(context, request))
 
+@login_required
 def graph_data_view(request):
     report_data = Report.objects.all().values()
     target_data = Target.objects.all().values()
@@ -89,6 +92,7 @@ def graph_data_view(request):
     })
 
 
+@login_required
 def monthly(request):
     report_data = Report.objects.all().values()
      # Convert date objects to strings and Decimal objects to floats
@@ -116,10 +120,14 @@ def monthly(request):
     # return render(request, 'ui/test5.html', {'data_json': data_json})
     return render(request, 'ui/monthly5.html', {'report_data': report_data, 'target_data': target_data})
 
+
+@login_required
 def district_report_view(request):
     district_report = Report.objects.values('district').annotate(total_sales=Sum('total_sales'))
     return render(request, 'ui/test.html', {'district_report': district_report})
 
+
+@login_required
 def graph_data_view2(request):
     report_data = Report.objects.all().values()
     target_data = Target.objects.all().values()
@@ -164,6 +172,8 @@ class DecimalEncoder(DjangoJSONEncoder):
             return str(obj)
         return super().default(obj)
 
+
+@login_required
 def monthly2(request):
     # Find the latest month with available data
     latest_month = Report.objects.aggregate(Max('sales_month'))['sales_month__max']

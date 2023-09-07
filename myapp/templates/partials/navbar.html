@@ -36,10 +36,12 @@
               >
                 <div class="profile-info">
                   <div class="info">
-                    <h6>John Doe</h6>
+                    {% if user.is_authenticated %}
+                    <h6>{{ user.username }}</h6>
+                    {% endif %}
                     <div class="image">
                       <img
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/BMW_logo_%28gray%29.svg/270px-BMW_logo_%28gray%29.svg.png"
+                        src="{% static 'logo/icon.png' %}"
                         alt=""
                       />
                       <span class="status"></span>
