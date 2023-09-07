@@ -216,6 +216,10 @@
                   </table>
                <!-- End Table -->
              </div>
+             <div style="visually-hidden">
+             <canvas id="salesChart" width="400" height="200"></canvas>
+             </div>
+
            </div>
          </div>
        </div>
@@ -264,6 +268,8 @@
     </main>
     <!-- ======== main-wrapper end =========== -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
         $(document).ready(function() {
         // Hide the div initially (optional)
@@ -282,7 +288,49 @@
       var allData = JSON.parse('{{ report_data|escapejs }}');
       var allTarget = JSON.parse('{{ target_data|escapejs }}');
       console.log(allTarget);
-    
+      // Hard-coded account manager names
+var accountManagers = ["MUKAMANA", "KIZZA", "MUSONI", "MUKANOHERI", "BANZA", "MUGISHA", "NIYITEGEKA", "GAHIGI"];
+
+// Function to get actual sales data for the specified account manager
+function getActualSales(accountManagerName, selectedMonth) {
+  // Filter the data by account manager name and optional selected month
+  var filteredData = allData.filter(function(item) {
+    return item.account_manager.trim() === accountManagerName &&
+      (!selectedMonth || item.sales_month.trim() === selectedMonth);
+  });
+
+  // Calculate the total sales for each month
+  var salesByMonth = {};
+  filteredData.forEach(function(item) {
+    var month = item.sales_month.trim();
+    if (!salesByMonth[month]) {
+      salesByMonth[month] = 0;
+    }
+    salesByMonth[month] += item.qty * item.price;
+  });
+
+  // Convert the sales data to an array
+  var salesArray = Object.values(salesByMonth);
+
+  return salesArray;
+}
+
+// Function to get actual target data for the specified account manager
+function getActualTargets(accountManagerName, selectedMonth) {
+  // Filter the data by account manager name and optional selected month
+  var filteredTargets = allTarget.filter(function(targetItem) {
+    return targetItem.account_manager.trim() === accountManagerName &&
+      (!selectedMonth || targetItem.sales_month.trim() === selectedMonth);
+  });
+
+  // Extract the total targets for each target item
+  var targetArray = filteredTargets.map(function(targetItem) {
+    return targetItem.total_targets;
+  });
+
+  return targetArray;
+}
+
       // Function to get unique account manager names from the data
       function getUniqueAccountManagers(data) {
         const uniqueAccountManagers = new Set();
@@ -376,6 +424,17 @@
         });
         targetRow.append('<td></td>'); // Empty cell for the grand total column
         tableBody.append(targetRow);
+        // Add a row to show the percentage achieved for each account manager
+        var percentageAchievedRow = $('<tr>');
+          percentageAchievedRow.append($('<td>').html('<strong>Percentage Achieved</strong>'));
+          accountManagers.forEach(function (accountManagerName) {
+            var totalSales = accountManagerTotals[accountManagerName] || 0;
+            var totalTargets = accountManagerTargets[accountManagerName] || 0;
+            var percentageAchieved = totalTargets !== 0 ? (totalSales / totalTargets) * 100 : 0;
+            percentageAchievedRow.append($('<td>').html('<strong>' + percentageAchieved.toFixed(2) + '%</strong>'));
+          });
+          percentageAchievedRow.append('<td></td>'); // Empty cell for grand total column
+          tableBody.append(percentageAchievedRow);
       }
     
       // Call the function to get unique account managers
@@ -386,10 +445,63 @@
       populateProductAccountManagerTable(allData, accountManagers, '');
     
       // Add event listener to the "Sales Month" filter dropdown
-      $('#sales-month-filter2').on('change', function () {
-        var selectedMonth = this.value.trim(); // Update the selected month value when the user selects a new option
-        populateProductAccountManagerTable(allData, accountManagers, selectedMonth); // Repopulate the table with the filtered data
-      });
+
+// Update the actual sales and target data using Django template tags
+var actualSales = {{ report_data|safe }};
+var actualTargets = {{ target_data|safe }};
+console.log(JSON.stringify(actualSales, null, 2));
+// Initialize and configure the chart
+var ctx = document.getElementById('salesChart').getContext('2d');
+var chart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: accountManagers,
+    datasets: [
+      {
+        label: 'Actual Sales',
+        data: actualSales,
+        backgroundColor: 'rgba(75, 192, 192, 0.6)', // Adjust the color as needed
+      },
+      {
+        label: 'Actual Targets',
+        data: actualTargets,
+        backgroundColor: 'rgba(255, 99, 132, 0.6)', // Adjust the color as needed
+      },
+    ],
+  },
+  options: {
+    scales: {
+      x: {
+        type: 'category', // Use 'category' type for the X-axis
+        stacked: true,
+      },
+      y: {
+        beginAtZero: true,
+        stacked: true,
+      },
+    },
+  },
+});
+
+// Render the chart
+chart.update();
+$('#sales-month-filter2').on('change', function() {
+  var selectedMonth = this.value.trim(); // Update the selected month value when the user selects a new option
+  populateProductAccountManagerTable(allData, accountManagers, selectedMonth); // Repopulate the table with the filtered data
+
+  // Update the chart data based on the selected month
+  accountManagers.forEach(function(accountManagerName, index) {
+    var actualSalesData = getActualSales(accountManagerName, selectedMonth);
+    var actualTargetsData = getActualTargets(accountManagerName, selectedMonth);
+
+    // Update the chart dataset with the new data
+    chart.data.datasets[index].data = actualSalesData;
+    chart.data.datasets[index + accountManagers.length].data = actualTargetsData;
+  });
+
+  // Update the chart
+  chart.update();
+});
     </script>
     
     
