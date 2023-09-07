@@ -37,7 +37,7 @@ def login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            return redirect('graph_data_view')  # Redirect to the desired page after successful login
+            return redirect('graph_data_view2')  # Redirect to the desired page after successful login
         else:
             messages.error(request, 'Invalid username or password.')
             return redirect('login')
@@ -118,7 +118,7 @@ def monthly(request):
     
     # data_json = json.dumps(list(report_data))
     # return render(request, 'ui/test5.html', {'data_json': data_json})
-    return render(request, 'ui/monthly5.html', {'report_data': report_data, 'target_data': target_data})
+    return render(request, 'ui/monthly.html', {'report_data': report_data, 'target_data': target_data})
 
 
 @login_required
