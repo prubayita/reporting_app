@@ -1,11 +1,147 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Performance Report</title>
-</head>
-<body>
-    <h1>Performance Report</h1>
+
+{% extends "base.html" %}
+
+{% load static %}
+{% block content %}
+   <style>
+    .main-btn2 {
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  padding: 15px 15px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 4px;
+  border-radius: 64px;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.4s ease-in-out;
+  border: 1px solid transparent;
+  overflow: hidden;
+  margin: 5px
+}
+    .pagination-buttons-container {
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  bottom: 20px; /* Adjust this value to set the desired distance from the bottom */
+  left: 0;
+  right: 0;
+  z-index: 999; /* Ensure the buttons appear above other elements */
+}
+#map {
+  height: 500px;
+ }
+.select-style-1 .select-position.select-sm::after {
+    margin-top: 8px;
+  }
+   </style>
+    <!-- ======== sidebar-nav end =========== -->
+
+    <!-- ======== main-wrapper start =========== -->
+    
+      <!-- ========== header start ========== -->
+
+      <!-- ========== header end ========== -->
+
+      <!-- ========== section start ========== -->
+      <section class="section">
+        <div class="container-fluid">
+          <!-- ========== title-wrapper start ========== -->
+          <div class="title-wrapper pt-30">
+            <div class="row align-items-center">
+              <div class="col-md-6">
+                <div class="title mb-30">
+                  <h2>Monthly Dashboard</h2>
+                </div>
+              </div>
+              <!-- end col -->
+              <div class="col-md-6">
+                <div class="breadcrumb-wrapper mb-30">
+                  <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                      <li class="breadcrumb-item">
+                        <a href="#0">Dashboard</a>
+                      </li>
+                      <li class="breadcrumb-item active" aria-current="page">
+                        Monthly
+                      </li>
+                    </ol>
+                  </nav>
+                </div>
+              </div>
+              <!-- end col -->
+            </div>
+            <!-- end row -->
+          </div>
+          <!-- ========== title-wrapper end ========== -->
+          <div class="row visually-hidden">
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+              <div class="icon-card mb-30">
+                <div class="icon success">
+                  <i class="lni lni-dollar"></i>
+                </div>
+                <div class="content">
+                  <h6 class="mb-10">Total Income</h6>
+                  <h3 class="text-bold mb-10" id="total-sales"></h3>
+                  <p class="text-sm text-success" id="percentage-difference">
+                   
+                  </p>
+                </div>
+              </div>
+              <!-- End Icon Cart -->
+            </div>
+            <!-- End Col -->
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+              <div class="icon-card mb-30">
+                <div class="icon primary">
+                  <i class="lni lni-credit-cards"></i>
+                </div>
+                <div class="content">
+                  <h6 class="mb-10">Total Target</h6>
+                  <h3 class="text-bold mb-10" id="total-targets"></h3>
+                </div>
+              </div>
+              <!-- End Icon Cart -->
+            </div>
+            <!-- End Col -->
+          </div>
+          <!-- End Row -->
+
+          
+
+          <!--all sales-->
+          <div class="row">
+            <div class="col-lg-12">
+           <div class="card-style mb-30">
+             <div
+               class="
+                 title
+                 d-flex
+                 flex-wrap
+                 align-items-center
+                 justify-content-between
+               "
+             >
+               <div class="left">
+                 <h6 class="text-medium mb-30">Product performance</h6>
+               </div>
+               
+             </div>
+             
     <form method="get">
+        <div class="row" id="targetDiv">
+        <div class="col-lg-12">
+        <div class="card-style mb-30">
+        <!-- Use "d-flex" to create a flex container and "flex-wrap" to wrap the items to the next line if necessary. -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between">
+        <div class="select-style-1 mb-2">
+        <div class="select-position select-sm">
         <label for="sales_month">Select Month:</label>
         <select name="sales_month" id="month">
             <option value="">All</option>
@@ -18,28 +154,120 @@
             <option value="June">June</option>
             <!-- Add other months here -->
         </select>
-        <button type="submit">Filter</button>
+        </div>
+        </div>
+        <button type="submit" class="main-btn primary-btn btn-hover">Filter</button>
+        </div>
+        </div>
+        </div>
+        </div>
     </form>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>PRODUCTS</th>
-                <th>Actuals</th>
-                <th>Target</th>
-                <th>Performance</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product, data in performance_data.items %}
+    <div class="table-responsive">
+
+        <table class="table top-selling-table">
+            <thead>
                 <tr>
-                    <td>{{ product }}</td>
-                    <td>{{ data.actual_sales }}</td>
-                    <td>{{ data.total_target }}</td>
-                    <td>{{ data.performance|floatformat:2 }}%</td>
+                    <th><h6 class="text-sm text-medium">PRODUCTS</h6></th>
+                    <th><h6 class="text-sm text-medium">Actuals</h6></th>
+                    <th><h6 class="text-sm text-medium">Target</h6></th>
+                    <th><h6 class="text-sm text-medium">Performance</h6></th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+            </thead>
+            <tbody>
+                {% for product, data in performance_data.items %}
+                    <tr>
+                        <td>{{ product }}</td>
+                        <td>{{ data.actual_sales }}</td>
+                        <td>{{ data.total_target }}</td>
+                        <td>{{ data.performance|floatformat:2 }}%</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="chart-container">
+        <canvas id="salesChart"></canvas>
+    </div>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Function to generate the chart
+        function generateChart() {
+            // Parse the JSON data properly using JSON.parse
+            var performanceData = JSON.parse('{{ performance_data_json|escapejs }}');
+
+            var labels = [];
+            var actuals = [];
+            var targets = [];
+
+            for (var product in performanceData) {
+                labels.push(product);
+                actuals.push(parseFloat(performanceData[product].actual_sales)); // Convert to float
+                targets.push(parseFloat(performanceData[product].total_target)); // Convert to float
+            }
+
+            var ctx = document.getElementById('salesChart').getContext('2d');
+
+            var chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Actual Sales',
+                            data: actuals,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                        },
+                        {
+                            label: 'Target Sales',
+                            data: targets,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1,
+                        },
+                    ],
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                },
+            });
+        }
+
+        // Call the generateChart function
+        generateChart();
+
+        // Hide the div initially (optional)
+        $('#targetDiv').hide();
+
+        // Add click event listener to the button
+        $('#toggleButton').on('click', function () {
+            // Toggle the visibility of the div
+            $('#targetDiv').toggle();
+
+            // Generate the chart when the div is visible
+            if ($('#targetDiv').is(':visible')) {
+                generateChart();
+            }
+        });
+    });
+</script>
+<script>
+    console.log('{{ performance_data_json|escapejs }}');
+</script>
+    <!-- ========== section end ========== -->
+</div>
+<!-- end container -->
+</section>
+<!-- ========== section end ========== -->
+{% endblock content %}
