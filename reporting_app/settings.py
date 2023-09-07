@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'myapp',
     'django_extensions',
     'import_export',
-    'chartjs',
 ]
 
 MIDDLEWARE = [

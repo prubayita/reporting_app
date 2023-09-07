@@ -179,7 +179,9 @@
                         <td>{{ product }}</td>
                         <td>{{ data.actual_sales }}</td>
                         <td>{{ data.total_target }}</td>
-                        <td>{{ data.performance|floatformat:2 }}%</td>
+                        <td class="performance-cell">
+                            {{ data.performance|floatformat:2 }}%
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -264,6 +266,18 @@
 </script>
 <script>
     console.log('{{ performance_data_json|escapejs }}');
+</script>
+<script>
+    $(document).ready(function() {
+        $('.performance-cell').each(function() {
+            var performance = parseFloat($(this).text()); 
+            if (performance > 100) {
+                $(this).addClass('text-success'); 
+            } else {
+                $(this).addClass('text-danger'); 
+            }
+        });
+    });
 </script>
     <!-- ========== section end ========== -->
 </div>
