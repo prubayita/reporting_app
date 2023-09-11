@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Sales and Targets</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div>
+        <canvas id="monthlyChart"></canvas>
+    </div>
+    <div>
+        <label for="monthFilter">Filter by Month:</label>
+        <select id="monthFilter">
+            <!-- Populate this select box with the available months -->
+        </select>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Parse the JSON data
+            const reportData = JSON.parse('{{ report_data|safe }}');
+            const targetData = JSON.parse('{{ target_data|safe }}');
+            
+            // Get references to the canvas and select elements
+            const canvas = document.getElementById('monthlyChart');
+            const monthFilter = document.getElementById('monthFilter');
+        
+            // Extract unique months for filtering
+            const uniqueMonths = [...new Set(reportData.map(item => item.sales_month))];
+        
+            // Populate the month filter select box
+            uniqueMonths.forEach(month => {
+                const option = document.createElement('option');
+                option.value = month;
+                option.textContent = month;
+                monthFilter.appendChild(option);
+            });
+        
+            // Initial data for the chart (you may want to filter it by the selected month)
+            const initialChartData = {
+                labels: [], // Account managers
+                datasets: [
+                    {
+                        label: 'Sales',
+                        data: [], // Sales data
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)', // Adjust the color
+                        borderColor: 'rgba(75, 192, 192, 1)', // Adjust the color
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Targets',
+                        data: [], // Targets data
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)', // Adjust the color
+                        borderColor: 'rgba(255, 99, 132, 1)', // Adjust the color
+                        borderWidth: 1
+                    }
+                ]
+            };
+        
+            const ctx = canvas.getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: initialChartData,
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        
+            // Function to update the chart data based on the selected month
+            function updateChartData(selectedMonth) {
+                // Filter data by the selected month
+                const filteredReportData = reportData.filter(item => item.sales_month === selectedMonth);
+                const filteredTargetData = targetData.filter(item => item.sales_month === selectedMonth);
+        
+                // Group data by account manager
+                const salesByAccountManager = {};
+                const targetsByAccountManager = {};
+        
+                filteredReportData.forEach(item => {
+                    const accountManager = item.account_manager;
+                    if (!salesByAccountManager[accountManager]) {
+                        salesByAccountManager[accountManager] = 0;
+                    }
+                    salesByAccountManager[accountManager] += parseFloat(item.total_sales);
+                });
+        
+                filteredTargetData.forEach(item => {
+                    const accountManager = item.account_manager;
+                    if (!targetsByAccountManager[accountManager]) {
+                        targetsByAccountManager[accountManager] = 0;
+                    }
+                    targetsByAccountManager[accountManager] += parseFloat(item.total_targets);
+                });
+        
+                // Update chart data
+                chart.data.labels = Object.keys(salesByAccountManager);
+                chart.data.datasets[0].data = Object.values(salesByAccountManager);
+                chart.data.datasets[1].data = Object.values(targetsByAccountManager);
+        
+                chart.update();
+            }
+        
+            // Initialize the chart with the default selected month
+            const defaultSelectedMonth = uniqueMonths[0];
+            monthFilter.value = defaultSelectedMonth;
+            updateChartData(defaultSelectedMonth);
+        
+            // Add an event listener to update the chart when the month filter changes
+            monthFilter.addEventListener('change', function () {
+                const selectedMonth = monthFilter.value;
+                updateChartData(selectedMonth);
+            });
+        });
+        </script>
+</body>
+</html>

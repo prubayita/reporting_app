@@ -218,9 +218,12 @@
                   </table>
                <!-- End Table -->
              </div>
-             <div class="visually-hidden">
-             <canvas id="salesChart" width="400" height="200"></canvas>
-             </div>
+            
+          <div style="width: 80%; margin: auto;">
+            <canvas id="monthlyChart"></canvas>
+          </div>
+          </div>
+          
 
            </div>
          </div>
@@ -458,46 +461,6 @@ function getActualTargets(accountManagerName, selectedMonth) {
       populateProductAccountManagerTable(allData, accountManagers, '');
     
       // Add event listener to the "Sales Month" filter dropdown
-
-// Update the actual sales and target data using Django template tags
-var actualSales = {{ report_data|safe }};
-var actualTargets = {{ target_data|safe }};
-console.log(JSON.stringify(actualSales, null, 2));
-// Initialize and configure the chart
-var ctx = document.getElementById('salesChart').getContext('2d');
-var chart = new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: accountManagers,
-    datasets: [
-      {
-        label: 'Actual Sales',
-        data: actualSales,
-        backgroundColor: 'rgba(75, 192, 192, 0.6)', // Adjust the color as needed
-      },
-      {
-        label: 'Actual Targets',
-        data: actualTargets,
-        backgroundColor: 'rgba(255, 99, 132, 0.6)', // Adjust the color as needed
-      },
-    ],
-  },
-  options: {
-    scales: {
-      x: {
-        type: 'category', // Use 'category' type for the X-axis
-        stacked: true,
-      },
-      y: {
-        beginAtZero: true,
-        stacked: true,
-      },
-    },
-  },
-});
-
-// Render the chart
-chart.update();
 $('#sales-month-filter2').on('change', function() {
   var selectedMonth = this.value.trim(); // Update the selected month value when the user selects a new option
   populateProductAccountManagerTable(allData, accountManagers, selectedMonth); // Repopulate the table with the filtered data
@@ -506,16 +469,114 @@ $('#sales-month-filter2').on('change', function() {
   accountManagers.forEach(function(accountManagerName, index) {
     var actualSalesData = getActualSales(accountManagerName, selectedMonth);
     var actualTargetsData = getActualTargets(accountManagerName, selectedMonth);
-
-    // Update the chart dataset with the new data
-    chart.data.datasets[index].data = actualSalesData;
-    chart.data.datasets[index + accountManagers.length].data = actualTargetsData;
   });
-
-  // Update the chart
-  chart.update();
 });
     </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          // Parse the JSON data
+          const reportData = JSON.parse('{{ report_data|safe }}');
+          const targetData = JSON.parse('{{ target_data|safe }}');
+          
+          // Get references to the canvas and select elements
+          const canvas = document.getElementById('monthlyChart');
+          const monthFilter = document.getElementById('sales-month-filter2');
+      
+          // Extract unique months for filtering
+          const uniqueMonths = [...new Set(reportData.map(item => item.sales_month))];
+      
+          // Populate the month filter select box
+          uniqueMonths.forEach(month => {
+              const option = document.createElement('option');
+              option.value = month;
+              option.textContent = month;
+              monthFilter.appendChild(option);
+          });
+      
+          // Initial data for the chart (you may want to filter it by the selected month)
+          const initialChartData = {
+              labels: [], // Account managers
+              datasets: [
+                  {
+                      label: 'Sales',
+                      data: [], // Sales data
+                      backgroundColor: 'rgba(75, 192, 192, 0.2)', // Adjust the color
+                      borderColor: 'rgba(75, 192, 192, 1)', // Adjust the color
+                      borderWidth: 1
+                  },
+                  {
+                      label: 'Targets',
+                      data: [], // Targets data
+                      backgroundColor: 'rgba(255, 99, 132, 0.2)', // Adjust the color
+                      borderColor: 'rgba(255, 99, 132, 1)', // Adjust the color
+                      borderWidth: 1
+                  }
+              ]
+          };
+      
+          const ctx = canvas.getContext('2d');
+          const chart = new Chart(ctx, {
+              type: 'bar',
+              data: initialChartData,
+              options: {
+                  scales: {
+                      y: {
+                          beginAtZero: true
+                      }
+                  }
+              }
+          });
+      
+          // Function to update the chart data based on the selected month
+          function updateChartData(selectedMonth) {
+              // Filter data by the selected month
+              const filteredReportData = reportData.filter(item => item.sales_month === selectedMonth);
+              const filteredTargetData = targetData.filter(item => item.sales_month === selectedMonth);
+      
+              // Group data by account manager
+              const salesByAccountManager = {};
+              const targetsByAccountManager = {};
+      
+              filteredReportData.forEach(item => {
+                  const accountManager = item.account_manager;
+                  if (!salesByAccountManager[accountManager]) {
+                      salesByAccountManager[accountManager] = 0;
+                  }
+                  salesByAccountManager[accountManager] += parseFloat(item.total_sales);
+              });
+      
+              filteredTargetData.forEach(item => {
+                  const accountManager = item.account_manager;
+                  if (!targetsByAccountManager[accountManager]) {
+                      targetsByAccountManager[accountManager] = 0;
+                  }
+                  targetsByAccountManager[accountManager] += parseFloat(item.total_targets);
+              });
+      
+              // Update chart data
+              chart.data.labels = Object.keys(salesByAccountManager);
+              chart.data.datasets[0].data = Object.values(salesByAccountManager);
+              chart.data.datasets[1].data = Object.values(targetsByAccountManager);
+      
+              chart.update();
+          }
+      
+          // Initialize the chart with the default selected month
+          const defaultSelectedMonth = uniqueMonths[0];
+          monthFilter.value = defaultSelectedMonth;
+          updateChartData(defaultSelectedMonth);
+      
+          // Add an event listener to update the chart when the month filter changes
+          monthFilter.addEventListener('change', function () {
+              const selectedMonth = monthFilter.value;
+              updateChartData(selectedMonth);
+          });
+      });
+      </script>
+  
+  
+
     
     
 {% endblock content %}

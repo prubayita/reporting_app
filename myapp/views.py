@@ -231,3 +231,33 @@ def monthly2(request):
     print(json.dumps(performance_data, cls=DecimalEncoder))
 
     return render(request, 'ui/table.html', context)
+
+def monthly_chart(request):
+    # Retrieve data from the Report model
+    report_data = Report.objects.all().values()
+    
+    # Convert date objects to strings and Decimal objects to floats
+    report_data = [
+        {key: value.strftime('%Y-%m-%d') if isinstance(value, date)
+         else float(value) if isinstance(value, Decimal)
+         else value for key, value in data.items()}
+        for data in report_data
+    ]
+
+    # Retrieve data from the Target model
+    target_data = Target.objects.all().values()
+    
+    # Convert date objects to strings and Decimal objects to floats
+    target_data = [
+        {key: value.strftime('%Y-%m-%d') if isinstance(value, date)
+         else float(value) if isinstance(value, Decimal)
+         else value for key, value in data.items()}
+        for data in target_data
+    ]
+
+    # Convert QuerySet to JSON for rendering in the template
+    target_data = json.dumps(list(target_data))
+    report_data = json.dumps(list(report_data))
+
+    # Pass the report_data and target_data to the template
+    return render(request, 'ui/chart.html', {'report_data': report_data, 'target_data': target_data})

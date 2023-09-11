@@ -11,4 +11,5 @@ urlpatterns = [
     path('m2', views.monthly2, name='monthly2'),
     path('table', views.table, name='table'),
     path('login', views.login, name='login'),
+    path('monthly-chart/', views.monthly_chart, name='monthly-chart'),
 ]
